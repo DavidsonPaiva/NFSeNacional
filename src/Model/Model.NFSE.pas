@@ -21,6 +21,7 @@ uses
   ACBrXmlBase,
   ACBrNFSeX,
   ACBrDFeSSL,
+  ACBrNFSeXNotasFiscais,
   ACBrDFe.Conversao,
   ACBrNFSeXWebservicesResponse,
   ACBrNFSeXConversao,
@@ -458,9 +459,9 @@ begin
   // FNFSE.Configuracoes.WebServices.ProxyUser  := '';
   // FNFSE.Configuracoes.WebServices.ProxyPass  := '';
 
-  FNFSE.Configuracoes.Geral.Emitente.CNPJ      := OnlyNumber(FData.Servico.Prestador.CNPJ);
-  FNFSE.Configuracoes.Geral.Emitente.InscMun   := OnlyNumber(FData.Servico.Prestador.InscricaoMunicipal);
-  FNFSE.Configuracoes.Geral.Emitente.RazSocial := FData.Servico.Prestador.RazaoSocial.Trim.ToUpper;
+  FNFSE.Configuracoes.Geral.Emitente.CNPJ      := OnlyNumber(FData.Prestador.CNPJ);
+  FNFSE.Configuracoes.Geral.Emitente.InscMun   := OnlyNumber(FData.Prestador.InscricaoMunicipal);
+  FNFSE.Configuracoes.Geral.Emitente.RazSocial := FData.Prestador.RazaoSocial.Trim.ToUpper;
 
   if FNFSE.danfse <> nil then
   begin
@@ -486,147 +487,147 @@ begin
 end;
 
 procedure TModelNFSE.setData;
+var
+  lNota: TNotaFiscal;
 begin
   FNFSE.NotasFiscais.NumeroLote := FData.NumeroLote.ToString;
 
-  FNFSE.NotasFiscais.New.NFSE.verAplic := 'PaivaSystem';
+  lNota := FNFSE.NotasFiscais.New;
+
+  lNota.NFSE.verAplic := 'PaivaSystem';
   if FNFSE.Configuracoes.WebServices.Ambiente = TACBrTipoAmbiente.taProducao then
-    FNFSE.NotasFiscais.New.NFSE.Producao := snSim
+    lNota.NFSE.Producao := snSim
   else
-    FNFSE.NotasFiscais.New.NFSE.Producao              := snNao;
-  FNFSE.NotasFiscais.New.NFSE.IdentificacaoRps.Numero := FormatFloat('#########0', FData.NumeroRps);
-  FNFSE.NotasFiscais.New.NFSE.IdentificacaoRps.Serie  := FData.Serie.Trim;
-  FNFSE.NotasFiscais.New.NFSE.IdentificacaoRps.Tipo   := TTipoRPS.trRPS;
+    lNota.NFSE.Producao              := snNao;
+  lNota.NFSE.IdentificacaoRps.Numero := FormatFloat('#########0', FData.NumeroRps);
+  lNota.NFSE.IdentificacaoRps.Serie  := FData.Serie.Trim;
+  lNota.NFSE.IdentificacaoRps.Tipo   := TTipoRPS.trRPS;
 
-  FNFSE.NotasFiscais.New.NFSE.Competencia              := FData.Competencia;
-  FNFSE.NotasFiscais.New.NFSE.DataEmissao              := Date;
-  FNFSE.NotasFiscais.New.NFSE.DataEmissaoRPS           := Date;
-  FNFSE.NotasFiscais.New.NFSE.NaturezaOperacao         := FData.NaturezaOperacao;
-  FNFSE.NotasFiscais.New.NFSE.RegimeEspecialTributacao := FData.RegimeEspecialTributacao;
-  FNFSE.NotasFiscais.New.NFSE.OptanteSimplesNacional   := FData.OptanteSimplesNacional;
-  FNFSE.NotasFiscais.New.NFSE.IncentivadorCultural     := FData.IncentivadorCultural;
-  FNFSE.NotasFiscais.New.NFSE.StatusRps                := srNormal;
+  lNota.NFSE.Competencia              := FData.Competencia;
+  lNota.NFSE.DataEmissao              := Date;
+  lNota.NFSE.DataEmissaoRPS           := Date;
+  lNota.NFSE.NaturezaOperacao         := FData.NaturezaOperacao;
+  lNota.NFSE.RegimeEspecialTributacao := FData.RegimeEspecialTributacao;
+  lNota.NFSE.OptanteSimplesNacional   := FData.OptanteSimplesNacional;
+  lNota.NFSE.IncentivadorCultural     := FData.IncentivadorCultural;
+  lNota.NFSE.StatusRps                := srNormal;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorServicos          := FData.Servico.Valor;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorDeducoes          := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorPis               := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorCofins            := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorInss              := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorIr                := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorCsll              := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.IssRetido              := FData.Servico.IssRetido;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.OutrasRetencoes        := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.DescontoIncondicionado := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.DescontoCondicionado   := 0.00;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.BaseCalculo            := FData.Servico.BaseCalculo;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.Aliquota               := FData.Servico.Aliquota;
+  lNota.NFSE.Servico.Valores.ValorServicos          := FData.Servico.Valor;
+  lNota.NFSE.Servico.Valores.ValorDeducoes          := 0.00;
+  lNota.NFSE.Servico.Valores.ValorPis               := 0.00;
+  lNota.NFSE.Servico.Valores.ValorCofins            := 0.00;
+  lNota.NFSE.Servico.Valores.ValorInss              := 0.00;
+  lNota.NFSE.Servico.Valores.ValorIr                := 0.00;
+  lNota.NFSE.Servico.Valores.ValorCsll              := 0.00;
+  lNota.NFSE.Servico.Valores.IssRetido              := FData.Servico.IssRetido;
+  lNota.NFSE.Servico.Valores.OutrasRetencoes        := 0.00;
+  lNota.NFSE.Servico.Valores.DescontoIncondicionado := 0.00;
+  lNota.NFSE.Servico.Valores.DescontoCondicionado   := 0.00;
+  lNota.NFSE.Servico.Valores.BaseCalculo            := FData.Servico.BaseCalculo;
+  lNota.NFSE.Servico.Valores.Aliquota               := FData.Servico.Aliquota;
 
-  if FNFSE.NotasFiscais.New.NFSE.Servico.Valores.IssRetido = stNormal then
+  if lNota.NFSE.Servico.Valores.IssRetido = stNormal then
   begin
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorISS       := (FData.Servico.BaseCalculo * (FData.Servico.Aliquota / 100));
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorIssRetido := 0.00;
+    lNota.NFSE.Servico.Valores.ValorISS       := (FData.Servico.BaseCalculo * (FData.Servico.Aliquota / 100));
+    lNota.NFSE.Servico.Valores.ValorIssRetido := 0.00;
   end
   else
   begin
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorISS       := 0.00;
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorIssRetido := (FData.Servico.BaseCalculo * (FData.Servico.Aliquota / 100));
+    lNota.NFSE.Servico.Valores.ValorISS       := 0.00;
+    lNota.NFSE.Servico.Valores.ValorIssRetido := (FData.Servico.BaseCalculo * (FData.Servico.Aliquota / 100));
   end;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.CST          := cst01;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.vBCPisCofins := FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorServicos -
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorDeducoes - FNFSE.NotasFiscais.New.NFSE.Servico.Valores.DescontoIncondicionado;
+  lNota.NFSE.Servico.Valores.tribFed.CST          := cst01;
+  lNota.NFSE.Servico.Valores.tribFed.vBCPisCofins := lNota.NFSE.Servico.Valores.ValorServicos - lNota.NFSE.Servico.Valores.ValorDeducoes -
+    lNota.NFSE.Servico.Valores.DescontoIncondicionado;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.pAliqPis    := 0; // 1.65;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.pAliqCofins := 0; // 7.60;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.vPis        := FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.vBCPisCofins *
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.pAliqPis / 100;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.vCofins := FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.vBCPisCofins *
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.pAliqCofins / 100;
+  lNota.NFSE.Servico.Valores.tribFed.pAliqPis    := 0; // 1.65;
+  lNota.NFSE.Servico.Valores.tribFed.pAliqCofins := 0; // 7.60;
+  lNota.NFSE.Servico.Valores.tribFed.vPis        := lNota.NFSE.Servico.Valores.tribFed.vBCPisCofins * lNota.NFSE.Servico.Valores.tribFed.pAliqPis / 100;
+  lNota.NFSE.Servico.Valores.tribFed.vCofins     := lNota.NFSE.Servico.Valores.tribFed.vBCPisCofins * lNota.NFSE.Servico.Valores.tribFed.pAliqCofins / 100;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribFed.tpRetPisCofins := trpcNaoRetido;
+  lNota.NFSE.Servico.Valores.tribFed.tpRetPisCofins := trpcNaoRetido;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribMun.cPaisResult := 0;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribMun.tribISSQN   := tiOperacaoTributavel;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribMun.tpImunidade := timNenhum;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribMun.tpRetISSQN  := trNaoRetido;
+  lNota.NFSE.Servico.Valores.tribMun.cPaisResult := 0;
+  lNota.NFSE.Servico.Valores.tribMun.tribISSQN   := tiOperacaoTributavel;
+  lNota.NFSE.Servico.Valores.tribMun.tpImunidade := timNenhum;
+  lNota.NFSE.Servico.Valores.tribMun.tpRetISSQN  := trNaoRetido;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.tribMun.pAliq := 0;
+  lNota.NFSE.Servico.Valores.tribMun.pAliq := 0;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.totTrib.indTotTrib  := indNao;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.totTrib.vTotTribFed := 0;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.totTrib.vTotTribEst := 0;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.totTrib.vTotTribMun := 0;
+  lNota.NFSE.Servico.Valores.totTrib.indTotTrib  := indNao;
+  lNota.NFSE.Servico.Valores.totTrib.vTotTribFed := 0;
+  lNota.NFSE.Servico.Valores.totTrib.vTotTribEst := 0;
+  lNota.NFSE.Servico.Valores.totTrib.vTotTribMun := 0;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.totTrib.pTotTribFed := 0;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.totTrib.pTotTribEst := 0;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.totTrib.pTotTribMun := 0;
+  lNota.NFSE.Servico.Valores.totTrib.pTotTribFed := 0;
+  lNota.NFSE.Servico.Valores.totTrib.pTotTribEst := 0;
+  lNota.NFSE.Servico.Valores.totTrib.pTotTribMun := 0;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorLiquidoNfse := FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorServicos -
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorPis - FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorCofins -
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorInss - FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorIr -
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorCsll - FNFSE.NotasFiscais.New.NFSE.Servico.Valores.OutrasRetencoes -
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.ValorIssRetido - FNFSE.NotasFiscais.New.NFSE.Servico.Valores.DescontoIncondicionado -
-    FNFSE.NotasFiscais.New.NFSE.Servico.Valores.DescontoCondicionado;
+  lNota.NFSE.Servico.Valores.ValorLiquidoNfse := lNota.NFSE.Servico.Valores.ValorServicos - lNota.NFSE.Servico.Valores.ValorPis -
+    lNota.NFSE.Servico.Valores.ValorCofins - lNota.NFSE.Servico.Valores.ValorInss - lNota.NFSE.Servico.Valores.ValorIr -
+    lNota.NFSE.Servico.Valores.ValorCsll - lNota.NFSE.Servico.Valores.OutrasRetencoes - lNota.NFSE.Servico.Valores.ValorIssRetido -
+    lNota.NFSE.Servico.Valores.DescontoIncondicionado - lNota.NFSE.Servico.Valores.DescontoCondicionado;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.ItemListaServico          := FData.Servico.CodigoTribNac;
-  FNFSE.NotasFiscais.New.NFSE.Servico.CodigoTributacaoMunicipio := FData.Servico.CodigoTribMun;
+  lNota.NFSE.Servico.ItemListaServico          := FData.Servico.CodigoTribNac;
+  lNota.NFSE.Servico.CodigoTributacaoMunicipio := FData.Servico.CodigoTribMun;
 
-  FNFSE.NotasFiscais.New.NFSE.Servico.CodigoCnae       := OnlyNumber(FData.Servico.CNAE);
-  FNFSE.NotasFiscais.New.NFSE.Servico.CodigoNBS        := FData.Servico.CodigoNBS;
-  FNFSE.NotasFiscais.New.NFSE.Servico.Discriminacao    := FData.Servico.Discriminacao;
-  FNFSE.NotasFiscais.New.NFSE.Servico.CodigoMunicipio  := FConfig.CodigoMunicipioIBGE.ToString;
-  FNFSE.NotasFiscais.New.NFSE.Servico.CodigoPais       := 1058;
-  FNFSE.NotasFiscais.New.NFSE.Servico.ExigibilidadeISS := exiExigivel;
+  lNota.NFSE.Servico.CodigoCnae       := OnlyNumber(FData.Servico.CNAE);
+  lNota.NFSE.Servico.CodigoNBS        := FData.Servico.CodigoNBS;
+  lNota.NFSE.Servico.Discriminacao    := FData.Servico.Discriminacao;
+  lNota.NFSE.Servico.CodigoMunicipio  := FConfig.CodigoMunicipioIBGE.ToString;
+  lNota.NFSE.Servico.CodigoPais       := 1058;
+  lNota.NFSE.Servico.ExigibilidadeISS := exiExigivel;
 
-  FNFSE.NotasFiscais.New.NFSE.Prestador.IdentificacaoPrestador.CpfCnpj := OnlyNumber(FData.Servico.Prestador.CNPJ);
-  // FNFSE.NotasFiscais.New.NFSE.Prestador.IdentificacaoPrestador.InscricaoMunicipal := FData.Servico.Prestador.IncricaoMunicipal;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.RazaoSocial := FData.Servico.Prestador.RazaoSocial.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.cUF         := UFparaCodigoUF(FData.Servico.Prestador.UF);
+  lNota.NFSE.Prestador.IdentificacaoPrestador.CpfCnpj := OnlyNumber(FData.Prestador.CNPJ);
+  // Nota.NFSE.Prestador.IdentificacaoPrestador.InscricaoMunicipal := FData.Prestador.IncricaoMunicipal;
+  lNota.NFSE.Prestador.RazaoSocial := FData.Prestador.RazaoSocial.Trim.ToUpper;
+  lNota.NFSE.Prestador.cUF         := UFparaCodigoUF(FData.Prestador.UF);
 
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.CodigoMunicipio := FConfig.CodigoMunicipioIBGE.ToString;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.Endereco        := FData.Servico.Prestador.Endereco.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.Numero          := FData.Servico.Prestador.Numero.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.Bairro          := FData.Servico.Prestador.Bairro.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.xMunicipio      := FData.Servico.Prestador.Cidade.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.UF              := FData.Servico.Prestador.UF.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.CodigoPais      := 1058;
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.xPais           := 'BRASIL';
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Endereco.CEP             := OnlyNumber(FData.Servico.Prestador.CEP);
+  lNota.NFSE.Prestador.Endereco.CodigoMunicipio := FConfig.CodigoMunicipioIBGE.ToString;
+  lNota.NFSE.Prestador.Endereco.Endereco        := FData.Prestador.Endereco.Trim.ToUpper;
+  lNota.NFSE.Prestador.Endereco.Numero          := FData.Prestador.Numero.Trim.ToUpper;
+  lNota.NFSE.Prestador.Endereco.Bairro          := FData.Prestador.Bairro.Trim.ToUpper;
+  lNota.NFSE.Prestador.Endereco.xMunicipio      := FData.Prestador.Cidade.Trim.ToUpper;
+  lNota.NFSE.Prestador.Endereco.UF              := FData.Prestador.UF.Trim.ToUpper;
+  lNota.NFSE.Prestador.Endereco.CodigoPais      := 1058;
+  lNota.NFSE.Prestador.Endereco.xPais           := 'BRASIL';
+  lNota.NFSE.Prestador.Endereco.CEP             := OnlyNumber(FData.Prestador.CEP);
 
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Contato.Telefone := OnlyNumber(FData.Servico.Prestador.Telefone);
-  FNFSE.NotasFiscais.New.NFSE.Prestador.Contato.Email    := FData.Servico.Prestador.Email.Trim.ToLower;
+  lNota.NFSE.Prestador.Contato.Telefone := OnlyNumber(FData.Prestador.Telefone);
+  lNota.NFSE.Prestador.Contato.Email    := FData.Prestador.Email.Trim.ToLower;
 
-  FNFSE.NotasFiscais.New.NFSE.Tomador.AtualizaTomador := snNao;
-  FNFSE.NotasFiscais.New.NFSE.Tomador.TomadorExterior := snNao;
+  lNota.NFSE.Tomador.AtualizaTomador := snNao;
+  lNota.NFSE.Tomador.TomadorExterior := snNao;
 
-  FNFSE.NotasFiscais.New.NFSE.Tomador.IdentificacaoTomador.CpfCnpj := OnlyNumber(FData.Servico.Tomador.CNPJ);
-  FNFSE.NotasFiscais.New.NFSE.Tomador.RazaoSocial                  := FData.Servico.Tomador.RazaoSocial.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Endereco.Endereco            := FData.Servico.Tomador.Endereco.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Endereco.Numero              := FData.Servico.Tomador.Numero.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Endereco.Complemento         := FData.Servico.Tomador.Complemento.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Endereco.Bairro              := FData.Servico.Tomador.Bairro.Trim.ToUpper;
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Endereco.CodigoMunicipio     := FData.Servico.Tomador.CodigoMunicipioIBGE.ToString;
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Endereco.UF                  := FData.Servico.Tomador.UF;
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Endereco.CEP                 := OnlyNumber(FData.Servico.Tomador.CEP);
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Contato.Telefone             := OnlyNumber(FData.Servico.Tomador.Telefone);
-  FNFSE.NotasFiscais.New.NFSE.Tomador.Contato.Email                := FData.Servico.Tomador.Email.Trim.ToLower;
+  lNota.NFSE.Tomador.IdentificacaoTomador.CpfCnpj := OnlyNumber(FData.Tomador.CNPJ);
+  lNota.NFSE.Tomador.RazaoSocial                  := FData.Tomador.RazaoSocial.Trim.ToUpper;
+  lNota.NFSE.Tomador.Endereco.Endereco            := FData.Tomador.Endereco.Trim.ToUpper;
+  lNota.NFSE.Tomador.Endereco.Numero              := FData.Tomador.Numero.Trim.ToUpper;
+  lNota.NFSE.Tomador.Endereco.Complemento         := FData.Tomador.Complemento.Trim.ToUpper;
+  lNota.NFSE.Tomador.Endereco.Bairro              := FData.Tomador.Bairro.Trim.ToUpper;
+  lNota.NFSE.Tomador.Endereco.CodigoMunicipio     := FData.Tomador.CodigoMunicipioIBGE.ToString;
+  lNota.NFSE.Tomador.Endereco.UF                  := FData.Tomador.UF;
+  lNota.NFSE.Tomador.Endereco.CEP                 := OnlyNumber(FData.Tomador.CEP);
+  lNota.NFSE.Tomador.Contato.Telefone             := OnlyNumber(FData.Tomador.Telefone);
+  lNota.NFSE.Tomador.Contato.Email                := FData.Tomador.Email.Trim.ToLower;
 
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.finNFSe   := fnfsRegular;
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.indFinal  := ifNao;
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.cIndOp    := '100501';
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.tpOper    := TtpOperGovNFSe.togNenhum;
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.tpEnteGov := TtpEnteGov.tcgNenhum;
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.indDest   := idTomadorAdquirenteIguais;
+  // Nota.NFSE.IBSCBS.finNFSe   := fnfsRegular;
+  // Nota.NFSE.IBSCBS.indFinal  := ifNao;
+  // Nota.NFSE.IBSCBS.cIndOp    := '100501';
+  // Nota.NFSE.IBSCBS.tpOper    := TtpOperGovNFSe.togNenhum;
+  // Nota.NFSE.IBSCBS.tpEnteGov := TtpEnteGov.tcgNenhum;
+  // Nota.NFSE.IBSCBS.indDest   := idTomadorAdquirenteIguais;
   //
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.dest.CNPJCPF :=   FNFSE.NotasFiscais.New.NFSE.Tomador.IdentificacaoTomador.CpfCnpj;
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.dest.xNome   :=   FNFSE.NotasFiscais.New.NFSE.Tomador.RazaoSocial;
+  // Nota.NFSE.IBSCBS.dest.CNPJCPF :=   Nota.NFSE.Tomador.IdentificacaoTomador.CpfCnpj;
+  // Nota.NFSE.IBSCBS.dest.xNome   :=   Nota.NFSE.Tomador.RazaoSocial;
   //
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.Valores.trib.gIBSCBS.CST        := cst000;
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.Valores.trib.gIBSCBS.cClassTrib := '000001';
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.Valores.trib.gIBSCBS.cCredPres  := cpNenhum;
+  // Nota.NFSE.IBSCBS.Valores.trib.gIBSCBS.CST        := cst000;
+  // Nota.NFSE.IBSCBS.Valores.trib.gIBSCBS.cClassTrib := '000001';
+  // Nota.NFSE.IBSCBS.Valores.trib.gIBSCBS.cCredPres  := cpNenhum;
   //
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.Valores.trib.gIBSCBS.gTribRegular.CSTReg        := cstNenhum;
-  // FNFSE.NotasFiscais.New.NFSE.IBSCBS.Valores.trib.gIBSCBS.gTribRegular.cClassTribReg := '';
+  // Nota.NFSE.IBSCBS.Valores.trib.gIBSCBS.gTribRegular.CSTReg        := cstNenhum;
+  // Nota.NFSE.IBSCBS.Valores.trib.gIBSCBS.gTribRegular.cClassTribReg := '';
 end;
 
 function TModelNFSE.Send: Boolean;
@@ -635,6 +636,7 @@ begin
   setData;
   FNFSE.Emitir(FData.NumeroLote.ToString, meAutomatico, False);
   checkResponse(tmRecepcionar, FData.NumeroRps);
+  FNFSE.NotasFiscais.Imprimir;
   Result := True;
 end;
 

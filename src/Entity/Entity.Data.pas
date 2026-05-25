@@ -86,8 +86,7 @@ type
     FCNAE         : string;
     FCodigoNBS    : string;
     FDiscriminacao: string;
-    FPrestador    : TNFSeDataPrestador;
-    FTomador      : TNFSeDataTomador;
+
   public
     property IssRetido    : TnfseSituacaoTributaria read FIssRetido write FIssRetido;
     property BaseCalculo  : Double read FBaseCalculo write FBaseCalculo;
@@ -98,8 +97,6 @@ type
     property CNAE         : string read FCNAE write FCNAE;
     property CodigoNBS    : string read FCodigoNBS write FCodigoNBS;
     property Discriminacao: string read FDiscriminacao write FDiscriminacao;
-    property Prestador    : TNFSeDataPrestador read FPrestador write FPrestador;
-    property Tomador      : TNFSeDataTomador read FTomador write FTomador;
 
     procedure Clear;
 
@@ -118,7 +115,8 @@ type
     FOptanteSimplesNacional  : TnfseSimNao;
     FIncentivadorCultural    : TnfseSimNao;
     FServico                 : TNFSeDataServices;
-
+    FPrestador               : TNFSeDataPrestador;
+    FTomador                 : TNFSeDataTomador;
   public
     property NumeroLote              : Integer read FNumeroLote write FNumeroLote;
     property NumeroRPS               : Integer read FNumeroRPS write FNumeroRPS;
@@ -129,6 +127,8 @@ type
     property OptanteSimplesNacional  : TnfseSimNao read FOptanteSimplesNacional write FOptanteSimplesNacional;
     property IncentivadorCultural    : TnfseSimNao read FIncentivadorCultural write FIncentivadorCultural;
     property Servico                 : TNFSeDataServices read FServico write FServico;
+    property Prestador               : TNFSeDataPrestador read FPrestador write FPrestador;
+    property Tomador                 : TNFSeDataTomador read FTomador write FTomador;
 
     procedure Clear;
 
@@ -153,11 +153,15 @@ begin
   FIncentivadorCultural     := TnfseSimNao.snNao;
 
   FServico.Clear;
+  FPrestador.Clear;
+  FTomador.Clear;
 end;
 
 constructor TNFSeData.Create;
 begin
-  FServico := TNFSeDataServices.Create;
+  FServico   := TNFSeDataServices.Create;
+  FPrestador := TNFSeDataPrestador.Create;
+  FTomador   := TNFSeDataTomador.Create;
 
   FCompetencia      := Date;
   FNaturezaOperacao := TnfseNaturezaOperacao.no0; // 'Tributação no município';
@@ -166,6 +170,8 @@ end;
 destructor TNFSeData.Destroy;
 begin
   FServico.Free;
+  FPrestador.Free;
+  FTomador.Free;
   inherited;
 end;
 
@@ -182,15 +188,10 @@ begin
   FCNAE          := '6203100';
   FCodigoNBS     := '111032200';
   FDiscriminacao := 'SERVICO';
-
-  FPrestador.Clear;
-  FTomador.Clear;
 end;
 
 constructor TNFSeDataServices.Create;
 begin
-  FPrestador := TNFSeDataPrestador.Create;
-  FTomador   := TNFSeDataTomador.Create;
 
   FIssRetido     := TnfseSituacaoTributaria.stNormal;
   FBaseCalculo   := 0;
@@ -204,8 +205,7 @@ end;
 
 destructor TNFSeDataServices.Destroy;
 begin
-  FPrestador.Free;
-  FTomador.Free;
+
   inherited;
 end;
 

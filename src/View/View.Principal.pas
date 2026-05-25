@@ -77,29 +77,29 @@ begin
   lData.Servico.CodigoNBS     := '111032200';
   lData.Servico.Discriminacao := 'SERVIÇO DE EMISSAO DE NOTA';
 
-  lData.Servico.Prestador.CNPJ               := '';
-  lData.Servico.Prestador.InscricaoMunicipal := '';
-  lData.Servico.Prestador.RazaoSocial        := 'PAIVA SISTEMA LTDA';
-  lData.Servico.Prestador.Endereco           := 'RUA CORONEL ATHOS PEREIRA DA SILVEIRA';
-  lData.Servico.Prestador.Numero             := '1840';
-  lData.Servico.Prestador.Bairro             := 'JD. SAO CONRADO';
-  lData.Servico.Prestador.CEP                := '79093782';
-  lData.Servico.Prestador.Cidade             := 'CAMPO GRANDE';
-  lData.Servico.Prestador.UF                 := 'MS';
-  lData.Servico.Prestador.Telefone           := '67992677349';
-  lData.Servico.Prestador.Email              := 'contato@paiva.app.br';
+  lData.Prestador.CNPJ               := '';
+  lData.Prestador.InscricaoMunicipal := '';
+  lData.Prestador.RazaoSocial        := 'PAIVA SISTEMA LTDA';
+  lData.Prestador.Endereco           := 'RUA CORONEL ATHOS PEREIRA DA SILVEIRA';
+  lData.Prestador.Numero             := '1840';
+  lData.Prestador.Bairro             := 'JD. SAO CONRADO';
+  lData.Prestador.CEP                := '79093782';
+  lData.Prestador.Cidade             := 'CAMPO GRANDE';
+  lData.Prestador.UF                 := 'MS';
+  lData.Prestador.Telefone           := '67992677349';
+  lData.Prestador.Email              := 'contato@paiva.app.br';
 
-  lData.Servico.Tomador.CNPJ                := '';
-  lData.Servico.Tomador.RazaoSocial         := 'EMPRESA DESTINO';
-  lData.Servico.Tomador.Endereco            := 'RUA DA EMPRESA DESTINO';
-  lData.Servico.Tomador.Numero              := '100';
-  lData.Servico.Tomador.Complemento         := 'SALA 22';
-  lData.Servico.Tomador.Bairro              := 'BAIRRO';
-  lData.Servico.Tomador.CodigoMunicipioIBGE := 4115200; // Maringa/PR
-  lData.Servico.Tomador.UF                  := 'PR';
-  lData.Servico.Tomador.CEP                 := '87015440';
-  lData.Servico.Tomador.Telefone            := '4699999999';
-  lData.Servico.Tomador.Email               := 'meucliente@email.com.br';
+  lData.Tomador.CNPJ                := '';
+  lData.Tomador.RazaoSocial         := 'EMPRESA DESTINO';
+  lData.Tomador.Endereco            := 'RUA DA EMPRESA DESTINO';
+  lData.Tomador.Numero              := '100';
+  lData.Tomador.Complemento         := 'SALA 22';
+  lData.Tomador.Bairro              := 'BAIRRO';
+  lData.Tomador.CodigoMunicipioIBGE := 4115200; // Maringa/PR
+  lData.Tomador.UF                  := 'PR';
+  lData.Tomador.CEP                 := '87015440';
+  lData.Tomador.Telefone            := '4699999999';
+  lData.Tomador.Email               := 'meucliente@email.com.br';
 
   TControllerNFSE.New.Config(lConfig).Data(lData).Send;
 end;
