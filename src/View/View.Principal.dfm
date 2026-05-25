@@ -16,8 +16,8 @@ object frmPrincipal: TfrmPrincipal
   Position = poScreenCenter
   TextHeight = 15
   object btnGerar: TBitBtn
-    Left = 248
-    Top = 192
+    Left = 176
+    Top = 208
     Width = 75
     Height = 25
     Caption = 'Gerar'

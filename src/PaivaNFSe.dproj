@@ -115,6 +115,9 @@
         <DCCReference Include="Entity\Entity.Data.pas"/>
         <DCCReference Include="Controller\Controller.NFSE.pas"/>
         <DCCReference Include="Model\Model.NFSE.pas"/>
+        <DCCReference Include="Entity\Entity.Tomador.pas"/>
+        <DCCReference Include="Entity\Entity.Prestador.pas"/>
+        <DCCReference Include="Entity\Entity.Servico.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

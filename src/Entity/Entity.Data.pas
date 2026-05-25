@@ -4,107 +4,40 @@ interface
 
 uses
   System.SysUtils,
-  System.Math,
-  System.StrUtils,
-  System.Generics.Collections,
   ACBrNFSeXConversao,
   ACBrDFe.Conversao;
 
 type
-  TNFSeDataTomador = class
-  private
-    FCNPJ               : string;
-    FRazaoSocial        : string;
-    FEndereco           : string;
-    FNumero             : string;
-    FComplemento        : string;
-    FBairro             : string;
-    FCodigoMunicipioIBGE: Integer;
-    FUF                 : string;
-    FCEP                : string;
-    FTelefone           : string;
-    FEmail              : string;
-  public
-    property CNPJ               : string read FCNPJ write FCNPJ;
-    property RazaoSocial        : string read FRazaoSocial write FRazaoSocial;
-    property Endereco           : string read FEndereco write FEndereco;
-    property Numero             : string read FNumero write FNumero;
-    property Complemento        : string read FComplemento write FComplemento;
-    property Bairro             : string read FBairro write FBairro;
-    property CodigoMunicipioIBGE: Integer read FCodigoMunicipioIBGE write FCodigoMunicipioIBGE;
-    property UF                 : string read FUF write FUF;
-    property CEP                : string read FCEP write FCEP;
-    property Telefone           : string read FTelefone write FTelefone;
-    property Email              : string read FEmail write FEmail;
+  INFSeData = interface
+    ['{09153998-E5FA-4800-8A9C-4003B0B30EF6}']
+    function NumeroLote(AValue: Integer): INFSeData; overload;
+    function NumeroLote: Integer; overload;
+
+    function NumeroRPS(AValue: Integer): INFSeData; overload;
+    function NumeroRPS: Integer; overload;
+
+    function Serie(AValue: string): INFSeData; overload;
+    function Serie: string; overload;
+
+    function Competencia(AValue: TDateTime): INFSeData; overload;
+    function Competencia: TDateTime; overload;
+
+    function NaturezaOperacao(AValue: TnfseNaturezaOperacao): INFSeData; overload;
+    function NaturezaOperacao: TnfseNaturezaOperacao; overload;
+
+    function RegimeEspecialTributacao(AValue: TnfseRegimeEspecialTributacao): INFSeData; overload;
+    function RegimeEspecialTributacao: TnfseRegimeEspecialTributacao; overload;
+
+    function OptanteSimplesNacional(AValue: TnfseSimNao): INFSeData; overload;
+    function OptanteSimplesNacional: TnfseSimNao; overload;
+
+    function IncentivadorCultural(AValue: TnfseSimNao): INFSeData; overload;
+    function IncentivadorCultural: TnfseSimNao; overload;
 
     procedure Clear;
-
-    constructor Create;
-    destructor Destroy; override;
   end;
 
-  TNFSeDataPrestador = class
-  private
-    FCNPJ              : string;
-    FInscricaoMunicipal: string;
-    FRazaoSocial       : string;
-    FEndereco          : string;
-    FNumero            : string;
-    FBairro            : string;
-    FCEP               : string;
-    FTelefone          : string;
-    FCidade            : String;
-    FEmail             : string;
-    FUF                : string;
-  public
-    property CNPJ              : string read FCNPJ write FCNPJ;
-    property InscricaoMunicipal: string read FInscricaoMunicipal write FInscricaoMunicipal;
-    property RazaoSocial       : string read FRazaoSocial write FRazaoSocial;
-    property Endereco          : string read FEndereco write FEndereco;
-    property Numero            : string read FNumero write FNumero;
-    property Bairro            : string read FBairro write FBairro;
-    property CEP               : string read FCEP write FCEP;
-    property Telefone          : string read FTelefone write FTelefone;
-    property Email             : string read FEmail write FEmail;
-    property Cidade            : String read FCidade write FCidade;
-    property UF                : string read FUF write FUF;
-
-    procedure Clear;
-
-    constructor Create;
-    destructor Destroy; override;
-  end;
-
-  TNFSeDataServices = class
-  private
-    FIssRetido    : TnfseSituacaoTributaria;
-    FBaseCalculo  : Double;
-    FAliquota     : Double;
-    FValor        : Double;
-    FCodigoTribNac: string;
-    FCodigoTribMun: string;
-    FCNAE         : string;
-    FCodigoNBS    : string;
-    FDiscriminacao: string;
-
-  public
-    property IssRetido    : TnfseSituacaoTributaria read FIssRetido write FIssRetido;
-    property BaseCalculo  : Double read FBaseCalculo write FBaseCalculo;
-    property Aliquota     : Double read FAliquota write FAliquota;
-    property Valor        : Double read FValor write FValor;
-    property CodigoTribNac: string read FCodigoTribNac write FCodigoTribNac;
-    property CodigoTribMun: string read FCodigoTribMun write FCodigoTribMun;
-    property CNAE         : string read FCNAE write FCNAE;
-    property CodigoNBS    : string read FCodigoNBS write FCodigoNBS;
-    property Discriminacao: string read FDiscriminacao write FDiscriminacao;
-
-    procedure Clear;
-
-    constructor Create;
-    destructor Destroy; override;
-  end;
-
-  TNFSeData = class
+  TNFSeData = class(TInterfacedObject, INFSeData)
   private
     FNumeroLote              : Integer;
     FNumeroRPS               : Integer;
@@ -114,32 +47,56 @@ type
     FRegimeEspecialTributacao: TnfseRegimeEspecialTributacao;
     FOptanteSimplesNacional  : TnfseSimNao;
     FIncentivadorCultural    : TnfseSimNao;
-    FServico                 : TNFSeDataServices;
-    FPrestador               : TNFSeDataPrestador;
-    FTomador                 : TNFSeDataTomador;
   public
-    property NumeroLote              : Integer read FNumeroLote write FNumeroLote;
-    property NumeroRPS               : Integer read FNumeroRPS write FNumeroRPS;
-    property Serie                   : string read FSerie write FSerie;
-    property Competencia             : TDateTime read FCompetencia write FCompetencia;
-    property NaturezaOperacao        : TnfseNaturezaOperacao read FNaturezaOperacao write FNaturezaOperacao;
-    property RegimeEspecialTributacao: TnfseRegimeEspecialTributacao read FRegimeEspecialTributacao write FRegimeEspecialTributacao;
-    property OptanteSimplesNacional  : TnfseSimNao read FOptanteSimplesNacional write FOptanteSimplesNacional;
-    property IncentivadorCultural    : TnfseSimNao read FIncentivadorCultural write FIncentivadorCultural;
-    property Servico                 : TNFSeDataServices read FServico write FServico;
-    property Prestador               : TNFSeDataPrestador read FPrestador write FPrestador;
-    property Tomador                 : TNFSeDataTomador read FTomador write FTomador;
+    function NumeroLote(AValue: Integer): INFSeData; overload;
+    function NumeroLote: Integer; overload;
+
+    function NumeroRPS(AValue: Integer): INFSeData; overload;
+    function NumeroRPS: Integer; overload;
+
+    function Serie(AValue: string): INFSeData; overload;
+    function Serie: string; overload;
+
+    function Competencia(AValue: TDateTime): INFSeData; overload;
+    function Competencia: TDateTime; overload;
+
+    function NaturezaOperacao(AValue: TnfseNaturezaOperacao): INFSeData; overload;
+    function NaturezaOperacao: TnfseNaturezaOperacao; overload;
+
+    function RegimeEspecialTributacao(AValue: TnfseRegimeEspecialTributacao): INFSeData; overload;
+    function RegimeEspecialTributacao: TnfseRegimeEspecialTributacao; overload;
+
+    function OptanteSimplesNacional(AValue: TnfseSimNao): INFSeData; overload;
+    function OptanteSimplesNacional: TnfseSimNao; overload;
+
+    function IncentivadorCultural(AValue: TnfseSimNao): INFSeData; overload;
+    function IncentivadorCultural: TnfseSimNao; overload;
 
     procedure Clear;
 
     constructor Create;
     destructor Destroy; override;
+    class function New: INFSeData;
   end;
 
 implementation
 
-
 { TNFSeData }
+
+constructor TNFSeData.Create;
+begin
+  Clear;
+end;
+
+destructor TNFSeData.Destroy;
+begin
+  inherited;
+end;
+
+class function TNFSeData.New: INFSeData;
+begin
+  Result := Self.Create;
+end;
 
 procedure TNFSeData.Clear;
 begin
@@ -151,114 +108,94 @@ begin
   FRegimeEspecialTributacao := TnfseRegimeEspecialTributacao.retNenhum;
   FOptanteSimplesNacional   := TnfseSimNao.snNao;
   FIncentivadorCultural     := TnfseSimNao.snNao;
-
-  FServico.Clear;
-  FPrestador.Clear;
-  FTomador.Clear;
 end;
 
-constructor TNFSeData.Create;
+function TNFSeData.NumeroLote(AValue: Integer): INFSeData;
 begin
-  FServico   := TNFSeDataServices.Create;
-  FPrestador := TNFSeDataPrestador.Create;
-  FTomador   := TNFSeDataTomador.Create;
-
-  FCompetencia      := Date;
-  FNaturezaOperacao := TnfseNaturezaOperacao.no0; // 'Tributação no município';
+  Result      := Self;
+  FNumeroLote := AValue;
 end;
 
-destructor TNFSeData.Destroy;
+function TNFSeData.NumeroRPS(AValue: Integer): INFSeData;
 begin
-  FServico.Free;
-  FPrestador.Free;
-  FTomador.Free;
-  inherited;
+  Result     := Self;
+  FNumeroRPS := AValue;
 end;
 
-{ TNFSeDataServices }
-
-procedure TNFSeDataServices.Clear;
+function TNFSeData.Serie(AValue: string): INFSeData;
 begin
-  FIssRetido     := TnfseSituacaoTributaria.stNormal;
-  FBaseCalculo   := 0;
-  FAliquota      := 0;
-  FValor         := 0;
-  FCodigoTribNac := '150505';
-  FCodigoTribMun := '001';
-  FCNAE          := '6203100';
-  FCodigoNBS     := '111032200';
-  FDiscriminacao := 'SERVICO';
+  Result := Self;
+  FSerie := AValue;
 end;
 
-constructor TNFSeDataServices.Create;
+function TNFSeData.Competencia(AValue: TDateTime): INFSeData;
 begin
-
-  FIssRetido     := TnfseSituacaoTributaria.stNormal;
-  FBaseCalculo   := 0;
-  FAliquota      := 0;
-  FValor         := 0;
-  FCodigoTribNac := '010501';
-  FCodigoTribMun := '001';
-  FCodigoNBS     := '111032200';
-  FDiscriminacao := 'SERVICO';
+  Result       := Self;
+  FCompetencia := AValue;
 end;
 
-destructor TNFSeDataServices.Destroy;
+function TNFSeData.NaturezaOperacao(AValue: TnfseNaturezaOperacao): INFSeData;
 begin
-
-  inherited;
+  Result            := Self;
+  FNaturezaOperacao := AValue;
 end;
 
-{ TNFSeDataPrestador }
-
-procedure TNFSeDataPrestador.Clear;
+function TNFSeData.RegimeEspecialTributacao(AValue: TnfseRegimeEspecialTributacao): INFSeData;
 begin
-  FCNPJ               := '';
-  FInscricaoMunicipal := '';
-  FRazaoSocial        := '';
-  FEndereco           := '';
-  FNumero             := '';
-  FBairro             := '';
-  FCEP                := '';
-  FTelefone           := '';
-  FEmail              := '';
-  FCidade             := '';
-  FUF                 := '';
+  Result                    := Self;
+  FRegimeEspecialTributacao := AValue;
 end;
 
-constructor TNFSeDataPrestador.Create;
+function TNFSeData.OptanteSimplesNacional(AValue: TnfseSimNao): INFSeData;
 begin
+  Result                  := Self;
+  FOptanteSimplesNacional := AValue;
 end;
 
-destructor TNFSeDataPrestador.Destroy;
+function TNFSeData.IncentivadorCultural(AValue: TnfseSimNao): INFSeData;
 begin
-  inherited;
+  Result                := Self;
+  FIncentivadorCultural := AValue;
 end;
 
-{ TNFSeDataTomador }
-
-procedure TNFSeDataTomador.Clear;
+function TNFSeData.NumeroLote: Integer;
 begin
-  FCNPJ                := '';
-  FRazaoSocial         := '';
-  FEndereco            := '';
-  FNumero              := '';
-  FComplemento         := '';
-  FBairro              := '';
-  FCodigoMunicipioIBGE := 4115200;
-  FCEP                 := '';
-  FTelefone            := '';
-  FEmail               := '';
+  Result := FNumeroLote;
 end;
 
-constructor TNFSeDataTomador.Create;
+function TNFSeData.NumeroRPS: Integer;
 begin
-  FCodigoMunicipioIBGE := 4115200;
+  Result := FNumeroRPS;
 end;
 
-destructor TNFSeDataTomador.Destroy;
+function TNFSeData.Serie: string;
 begin
-  inherited;
+  Result := FSerie.Trim.ToUpper;
+end;
+
+function TNFSeData.Competencia: TDateTime;
+begin
+  Result := FCompetencia;
+end;
+
+function TNFSeData.NaturezaOperacao: TnfseNaturezaOperacao;
+begin
+  Result := FNaturezaOperacao;
+end;
+
+function TNFSeData.RegimeEspecialTributacao: TnfseRegimeEspecialTributacao;
+begin
+  Result := FRegimeEspecialTributacao;
+end;
+
+function TNFSeData.OptanteSimplesNacional: TnfseSimNao;
+begin
+  Result := FOptanteSimplesNacional;
+end;
+
+function TNFSeData.IncentivadorCultural: TnfseSimNao;
+begin
+  Result := FIncentivadorCultural;
 end;
 
 end.
