@@ -57,7 +57,7 @@ var
 begin
 
   lConfig := TNFSeConfig.New
-    .CertificadoDigital('AUHUHQUHUSHUHSUA')
+    .CertificadoDigital('')
     .PathResposta('C:\Temp')
     .PathSchemas('C:\Temp\Schemas')
     .Ambiente(taProducao)

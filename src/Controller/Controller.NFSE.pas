@@ -19,7 +19,7 @@ type
     function Servico(AValue: INFSeServico): IControllerNFSE;
     function Tomador(AValue: INFSeTomador): IControllerNFSE;
     function Prestador(AValue: INFSePrestador): IControllerNFSE;
-    function Send: Boolean;
+    procedure Send;
   end;
 
   TControllerNFSE = class(TInterfacedObject, IControllerNFSE)
@@ -35,7 +35,7 @@ type
     function Servico(AValue: INFSeServico): IControllerNFSE;
     function Tomador(AValue: INFSeTomador): IControllerNFSE;
     function Prestador(AValue: INFSePrestador): IControllerNFSE;
-    function Send: Boolean;
+    procedure Send;
   public
     constructor Create;
     destructor Destroy; override;
@@ -93,30 +93,40 @@ begin
   FTomador := AValue;
 end;
 
-function TControllerNFSE.Send: Boolean;
+procedure TControllerNFSE.Send;
 begin
   if not Assigned(FConfig) then
     raise Exception.Create('Config não atribuída no Controller.');
 
+  FConfig.Validate;
+
   if not Assigned(FData) then
     raise Exception.Create('Data não atribuída no Controller.');
+
+  FData.Validate;
 
   if not Assigned(FServico) then
     raise Exception.Create('Serviço não atribuído no Controller.');
 
+  FServico.Validate;
+
   if not Assigned(FPrestador) then
     raise Exception.Create('Prestador não atribuído no Controller.');
+
+  FPrestador.Validate;
 
   if not Assigned(FTomador) then
     raise Exception.Create('Tomador não atribuído no Controller.');
 
-  Result := TModelNFSE.New
+  FTomador.Validate;
+
+  TModelNFSE.New
     .Config(FConfig)
     .Data(FData)
     .Servico(FServico)
     .Prestador(FPrestador)
     .Tomador(FTomador)
-    .Send;
+    .Enviar;
 end;
 
 end.

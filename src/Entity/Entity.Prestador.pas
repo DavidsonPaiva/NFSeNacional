@@ -43,6 +43,7 @@ type
     function UF: string; overload;
 
     procedure Clear;
+    procedure Validate;
   end;
 
   TNFSePrestador = class(TInterfacedObject, INFSePrestador)
@@ -93,6 +94,7 @@ type
     function UF: string; overload;
 
     procedure Clear;
+    procedure Validate;
 
     constructor Create;
     destructor Destroy; override;
@@ -252,6 +254,36 @@ end;
 function TNFSePrestador.UF: string;
 begin
   Result := FUF.Trim.ToUpper;
+end;
+
+procedure TNFSePrestador.Validate;
+begin
+  if FCNPJ.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o CNPJ do prestador.');
+
+  if FInscricaoMunicipal.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a inscrição municipal do prestador.');
+
+  if FRazaoSocial.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a razão social do prestador.');
+
+  if FEndereco.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o endereço do prestador.');
+
+  if FNumero.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o número do endereço do prestador.');
+
+  if FBairro.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o bairro do prestador.');
+
+  if FCEP.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o CEP do prestador.');
+
+  if FCidade.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a cidade do prestador.');
+
+  if FUF.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a UF do prestador.');
 end;
 
 end.

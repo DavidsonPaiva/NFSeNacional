@@ -43,6 +43,7 @@ type
     function Email: string; overload;
 
     procedure Clear;
+    procedure Validate;
   end;
 
   TNFSeTomador = class(TInterfacedObject, INFSeTomador)
@@ -93,6 +94,7 @@ type
     function Email: string; overload;
 
     procedure Clear;
+    procedure Validate;
 
     constructor Create;
     destructor Destroy; override;
@@ -252,6 +254,33 @@ end;
 function TNFSeTomador.Email: string;
 begin
   Result := FEmail.Trim.ToLower;
+end;
+
+procedure TNFSeTomador.Validate;
+begin
+  if FCNPJ.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o CNPJ do tomador.');
+
+  if FRazaoSocial.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a razão social do tomador.');
+
+  if FEndereco.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o endereço do tomador.');
+
+  if FNumero.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o número do endereço do tomador.');
+
+  if FBairro.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o bairro do tomador.');
+
+  if FCEP.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o CEP do tomador.');
+
+  if FCodigoMunicipioIBGE <= 0 then
+    raise Exception.Create('Favor preencher o código IBGE do município do tomador.');
+
+  if FUF.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a UF do tomador.');
 end;
 
 end.

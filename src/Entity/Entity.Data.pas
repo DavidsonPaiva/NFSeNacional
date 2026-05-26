@@ -35,6 +35,7 @@ type
     function IncentivadorCultural: TnfseSimNao; overload;
 
     procedure Clear;
+    procedure Validate;
   end;
 
   TNFSeData = class(TInterfacedObject, INFSeData)
@@ -73,6 +74,7 @@ type
     function IncentivadorCultural: TnfseSimNao; overload;
 
     procedure Clear;
+    procedure Validate;
 
     constructor Create;
     destructor Destroy; override;
@@ -196,6 +198,18 @@ end;
 function TNFSeData.IncentivadorCultural: TnfseSimNao;
 begin
   Result := FIncentivadorCultural;
+end;
+
+procedure TNFSeData.Validate;
+begin
+  if FNumeroLote <= 0 then
+    raise Exception.Create('Favor preencher o número do LOTE.');
+
+  if FNumeroRPS <= 0 then
+    raise Exception.Create('Favor preencher o número do RPS.');
+
+  if FSerie.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o série.');
 end;
 
 end.

@@ -42,7 +42,7 @@ type
     function Servico(AValue: INFSeServico): IModelNFSE;
     function Tomador(AValue: INFSeTomador): IModelNFSE;
     function Prestador(AValue: INFSePrestador): IModelNFSE;
-    function Send: Boolean;
+    procedure Enviar;
   end;
 
   TModelNFSE = class(TInterfacedObject, IModelNFSE)
@@ -65,7 +65,7 @@ type
     function Servico(AValue: INFSeServico): IModelNFSE;
     function Tomador(AValue: INFSeTomador): IModelNFSE;
     function Prestador(AValue: INFSePrestador): IModelNFSE;
-    function Send: Boolean;
+    procedure Enviar;
   public
     constructor Create;
     destructor Destroy; override;
@@ -182,14 +182,17 @@ begin
 end;
 
 procedure TModelNFSE.setData;
+const
+  C_CODIGO_PAIS = 1058;
+  C_NOME_PAIS   = 'BRASIL';
 var
   lNota: TNotaFiscal;
 begin
   FNFSE.NotasFiscais.NumeroLote := FData.NumeroLote.ToString;
 
-  lNota := FNFSE.NotasFiscais.New;
-
+  lNota               := FNFSE.NotasFiscais.New;
   lNota.NFSE.verAplic := 'PaivaSystem';
+
   if FNFSE.Configuracoes.WebServices.Ambiente = TACBrTipoAmbiente.taProducao then
     lNota.NFSE.Producao := snSim
   else
@@ -209,27 +212,27 @@ begin
   lNota.NFSE.StatusRps                := srNormal;
 
   lNota.NFSE.Servico.Valores.ValorServicos          := FServico.Valor;
-  lNota.NFSE.Servico.Valores.ValorDeducoes          := 0.00;
-  lNota.NFSE.Servico.Valores.ValorPis               := 0.00;
-  lNota.NFSE.Servico.Valores.ValorCofins            := 0.00;
-  lNota.NFSE.Servico.Valores.ValorInss              := 0.00;
-  lNota.NFSE.Servico.Valores.ValorIr                := 0.00;
-  lNota.NFSE.Servico.Valores.ValorCsll              := 0.00;
+  lNota.NFSE.Servico.Valores.ValorDeducoes          := 0;
+  lNota.NFSE.Servico.Valores.ValorPis               := 0;
+  lNota.NFSE.Servico.Valores.ValorCofins            := 0;
+  lNota.NFSE.Servico.Valores.ValorInss              := 0;
+  lNota.NFSE.Servico.Valores.ValorIr                := 0;
+  lNota.NFSE.Servico.Valores.ValorCsll              := 0;
   lNota.NFSE.Servico.Valores.IssRetido              := FServico.IssRetido;
-  lNota.NFSE.Servico.Valores.OutrasRetencoes        := 0.00;
-  lNota.NFSE.Servico.Valores.DescontoIncondicionado := 0.00;
-  lNota.NFSE.Servico.Valores.DescontoCondicionado   := 0.00;
+  lNota.NFSE.Servico.Valores.OutrasRetencoes        := 0;
+  lNota.NFSE.Servico.Valores.DescontoIncondicionado := 0;
+  lNota.NFSE.Servico.Valores.DescontoCondicionado   := 0;
   lNota.NFSE.Servico.Valores.BaseCalculo            := FServico.BaseCalculo;
   lNota.NFSE.Servico.Valores.Aliquota               := FServico.Aliquota;
 
   if lNota.NFSE.Servico.Valores.IssRetido = stNormal then
   begin
     lNota.NFSE.Servico.Valores.ValorISS       := (FServico.BaseCalculo * (FServico.Aliquota / 100));
-    lNota.NFSE.Servico.Valores.ValorIssRetido := 0.00;
+    lNota.NFSE.Servico.Valores.ValorIssRetido := 0;
   end
   else
   begin
-    lNota.NFSE.Servico.Valores.ValorISS       := 0.00;
+    lNota.NFSE.Servico.Valores.ValorISS       := 0;
     lNota.NFSE.Servico.Valores.ValorIssRetido := (FServico.BaseCalculo * (FServico.Aliquota / 100));
   end;
 
@@ -237,8 +240,8 @@ begin
   lNota.NFSE.Servico.Valores.tribFed.vBCPisCofins := lNota.NFSE.Servico.Valores.ValorServicos - lNota.NFSE.Servico.Valores.ValorDeducoes -
     lNota.NFSE.Servico.Valores.DescontoIncondicionado;
 
-  lNota.NFSE.Servico.Valores.tribFed.pAliqPis    := 0;
-  lNota.NFSE.Servico.Valores.tribFed.pAliqCofins := 0;
+  lNota.NFSE.Servico.Valores.tribFed.pAliqPis    := FServico.AliquotaPis;
+  lNota.NFSE.Servico.Valores.tribFed.pAliqCofins := FServico.AliquotaCofins;
   lNota.NFSE.Servico.Valores.tribFed.vPis        := lNota.NFSE.Servico.Valores.tribFed.vBCPisCofins * lNota.NFSE.Servico.Valores.tribFed.pAliqPis / 100;
   lNota.NFSE.Servico.Valores.tribFed.vCofins     := lNota.NFSE.Servico.Valores.tribFed.vBCPisCofins * lNota.NFSE.Servico.Valores.tribFed.pAliqCofins / 100;
 
@@ -272,7 +275,7 @@ begin
   lNota.NFSE.Servico.CodigoNBS        := FServico.CodigoNBS;
   lNota.NFSE.Servico.Discriminacao    := FServico.Discriminacao;
   lNota.NFSE.Servico.CodigoMunicipio  := FConfig.CodigoMunicipioIBGE.ToString;
-  lNota.NFSE.Servico.CodigoPais       := 1058;
+  lNota.NFSE.Servico.CodigoPais       := C_CODIGO_PAIS;
   lNota.NFSE.Servico.ExigibilidadeISS := exiExigivel;
 
   lNota.NFSE.Prestador.IdentificacaoPrestador.CpfCnpj := FPrestador.CNPJ;
@@ -285,8 +288,8 @@ begin
   lNota.NFSE.Prestador.Endereco.Bairro          := FPrestador.Bairro;
   lNota.NFSE.Prestador.Endereco.xMunicipio      := FPrestador.Cidade;
   lNota.NFSE.Prestador.Endereco.UF              := FPrestador.UF;
-  lNota.NFSE.Prestador.Endereco.CodigoPais      := 1058;
-  lNota.NFSE.Prestador.Endereco.xPais           := 'BRASIL';
+  lNota.NFSE.Prestador.Endereco.CodigoPais      := C_CODIGO_PAIS;
+  lNota.NFSE.Prestador.Endereco.xPais           := C_NOME_PAIS;
   lNota.NFSE.Prestador.Endereco.CEP             := FPrestador.CEP;
 
   lNota.NFSE.Prestador.Contato.Telefone := FPrestador.Telefone;
@@ -635,14 +638,13 @@ begin
   end;
 end;
 
-function TModelNFSE.Send: Boolean;
+procedure TModelNFSE.Enviar;
 begin
   loadComponent;
   setData;
   FNFSE.Emitir(FData.NumeroLote.ToString, meAutomatico, False);
   checkResponse(tmRecepcionar, FData.NumeroRps);
   FNFSE.NotasFiscais.Imprimir;
-  Result := True;
 end;
 
 end.

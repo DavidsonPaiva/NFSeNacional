@@ -22,6 +22,12 @@ type
     function Valor(AValue: Double): INFSeServico; overload;
     function Valor: Double; overload;
 
+    function AliquotaPis(AValue: Double): INFSeServico; overload;
+    function AliquotaPis: Double; overload;
+
+    function AliquotaCofins(AValue: Double): INFSeServico; overload;
+    function AliquotaCofins: Double; overload;
+
     function CodigoTribNac(AValue: string): INFSeServico; overload;
     function CodigoTribNac: string; overload;
 
@@ -38,19 +44,22 @@ type
     function Discriminacao: string; overload;
 
     procedure Clear;
+    procedure Validate;
   end;
 
   TNFSeServico = class(TInterfacedObject, INFSeServico)
   private
-    FIssRetido    : TnfseSituacaoTributaria;
-    FBaseCalculo  : Double;
-    FAliquota     : Double;
-    FValor        : Double;
-    FCodigoTribNac: string;
-    FCodigoTribMun: string;
-    FCNAE         : string;
-    FCodigoNBS    : string;
-    FDiscriminacao: string;
+    FIssRetido     : TnfseSituacaoTributaria;
+    FBaseCalculo   : Double;
+    FAliquota      : Double;
+    FValor         : Double;
+    FAliquotaPis   : Double;
+    FAliquotaCofins: Double;
+    FCodigoTribNac : string;
+    FCodigoTribMun : string;
+    FCNAE          : string;
+    FCodigoNBS     : string;
+    FDiscriminacao : string;
   public
     function IssRetido(AValue: TnfseSituacaoTributaria): INFSeServico; overload;
     function IssRetido: TnfseSituacaoTributaria; overload;
@@ -64,6 +73,12 @@ type
     function Valor(AValue: Double): INFSeServico; overload;
     function Valor: Double; overload;
 
+    function AliquotaPis(AValue: Double): INFSeServico; overload;
+    function AliquotaPis: Double; overload;
+
+    function AliquotaCofins(AValue: Double): INFSeServico; overload;
+    function AliquotaCofins: Double; overload;
+
     function CodigoTribNac(AValue: string): INFSeServico; overload;
     function CodigoTribNac: string; overload;
 
@@ -80,6 +95,7 @@ type
     function Discriminacao: string; overload;
 
     procedure Clear;
+    procedure Validate;
 
     constructor Create;
     destructor Destroy; override;
@@ -107,15 +123,17 @@ end;
 
 procedure TNFSeServico.Clear;
 begin
-  FIssRetido     := TnfseSituacaoTributaria.stNormal;
-  FBaseCalculo   := 0;
-  FAliquota      := 0;
-  FValor         := 0;
-  FCodigoTribNac := '010501';
-  FCodigoTribMun := '001';
-  FCNAE          := '6203100';
-  FCodigoNBS     := '111032200';
-  FDiscriminacao := 'SERVICO';
+  FIssRetido      := TnfseSituacaoTributaria.stNormal;
+  FBaseCalculo    := 0;
+  FAliquota       := 0;
+  FValor          := 0;
+  FAliquotaPis    := 0;
+  FAliquotaCofins := 0;
+  FCodigoTribNac  := '010501';
+  FCodigoTribMun  := '001';
+  FCNAE           := '6203100';
+  FCodigoNBS      := '111032200';
+  FDiscriminacao  := 'SERVICO';
 end;
 
 function TNFSeServico.IssRetido(AValue: TnfseSituacaoTributaria): INFSeServico;
@@ -187,6 +205,28 @@ begin
   Result := FAliquota;
 end;
 
+function TNFSeServico.AliquotaCofins(AValue: Double): INFSeServico;
+begin
+  Result          := Self;
+  FAliquotaCofins := AValue;
+end;
+
+function TNFSeServico.AliquotaCofins: Double;
+begin
+  Result := FAliquotaCofins;
+end;
+
+function TNFSeServico.AliquotaPis(AValue: Double): INFSeServico;
+begin
+  Result       := Self;
+  FAliquotaPis := AValue;
+end;
+
+function TNFSeServico.AliquotaPis: Double;
+begin
+  Result := FAliquotaPis;
+end;
+
 function TNFSeServico.Valor: Double;
 begin
   Result := FValor;
@@ -215,6 +255,27 @@ end;
 function TNFSeServico.Discriminacao: string;
 begin
   Result := FDiscriminacao.Trim.ToUpper;
+end;
+
+procedure TNFSeServico.Validate;
+begin
+  if FCodigoTribNac.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o código de tributação nacional.');
+
+  if FCodigoTribMun.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o código de tributação municipal.');
+
+  if FCNAE.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o CNAE.');
+
+  if FCodigoNBS.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o código NBS.');
+
+  if FDiscriminacao.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a discriminação do serviço.');
+
+  if FValor <= 0 then
+    raise Exception.Create('Favor preencher o valor do serviço.');
 end;
 
 end.

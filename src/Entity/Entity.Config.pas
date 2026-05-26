@@ -34,6 +34,7 @@ type
     function NomePrefeitura: string; overload;
 
     procedure Clear;
+    procedure Validate;
   end;
 
   TNFSeConfig = class(TInterfacedObject, INFSeConfig)
@@ -72,6 +73,7 @@ type
     function NomePrefeitura: string; overload;
 
     procedure Clear;
+    procedure Validate;
 
     constructor Create;
     destructor Destroy; override;
@@ -195,6 +197,18 @@ end;
 function TNFSeConfig.NomePrefeitura: string;
 begin
   Result := FNomePrefeitura;
+end;
+
+procedure TNFSeConfig.Validate;
+begin
+  if FCertificadoDigital.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o certificado digital.');
+
+  if FPathResposta.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o path das respostas.');
+
+  if FPathSchemas.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher o path dos schemas.');
 end;
 
 end.
