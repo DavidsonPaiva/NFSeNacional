@@ -45,29 +45,36 @@ type
     procedure Enviar;
   end;
 
-  TModelNFSE = class(TInterfacedObject, IModelNFSE)
-  strict private
-    FDanfse: TACBrNFSeXDANFSeRL;
-    FNFSE  : TACBrNFSeX;
+  TModelResult = record
+    result: Boolean;
+    response: string;
+  end;
 
-    procedure loadComponent;
-    procedure setData;
-    procedure checkResponse(AMetodo: TMetodo; ANumRPS: Integer);
+  TModelNFSE = class(TInterfacedObject, IModelNFSE)
   private
+    FDanfse: TACBrNFSeXDANFSeRL;
+  protected
+    FNFSE     : TACBrNFSeX;
     FConfig   : INFSeConfig;
     FData     : INFSeData;
     FServico  : INFSeServico;
     FTomador  : INFSeTomador;
     FPrestador: INFSePrestador;
-  protected
+
+    procedure loadComponent; virtual;
+    procedure setData; virtual;
+    function checkResponse(AMetodo: TMetodo; ANumRPS: Integer): string; virtual;
+    procedure executeIssuance; virtual;
+    procedure executePrint; virtual;
+
     function Config(AValue: INFSeConfig): IModelNFSE;
     function Data(AValue: INFSeData): IModelNFSE;
     function Servico(AValue: INFSeServico): IModelNFSE;
     function Tomador(AValue: INFSeTomador): IModelNFSE;
     function Prestador(AValue: INFSePrestador): IModelNFSE;
-    procedure Enviar;
+    function Enviar(APrint: Boolean = True): TModelResult; virtual;
   public
-    constructor Create;
+    constructor Create; virtual;
     destructor Destroy; override;
     class function New: IModelNFSE;
   end;
@@ -94,36 +101,36 @@ end;
 
 class function TModelNFSE.New: IModelNFSE;
 begin
-  Result := Self.Create;
+  result := Self.Create;
 end;
 
 function TModelNFSE.Config(AValue: INFSeConfig): IModelNFSE;
 begin
-  Result  := Self;
+  result  := Self;
   FConfig := AValue;
 end;
 
 function TModelNFSE.Data(AValue: INFSeData): IModelNFSE;
 begin
-  Result := Self;
+  result := Self;
   FData  := AValue;
 end;
 
 function TModelNFSE.Prestador(AValue: INFSePrestador): IModelNFSE;
 begin
-  Result     := Self;
+  result     := Self;
   FPrestador := AValue;
 end;
 
 function TModelNFSE.Tomador(AValue: INFSeTomador): IModelNFSE;
 begin
-  Result   := Self;
+  result   := Self;
   FTomador := AValue;
 end;
 
 function TModelNFSE.Servico(AValue: INFSeServico): IModelNFSE;
 begin
-  Result   := Self;
+  result   := Self;
   FServico := AValue;
 end;
 
@@ -155,7 +162,7 @@ begin
   FNFSE.Configuracoes.Arquivos.Salvar           := True;
 
   FNFSE.Configuracoes.Geral.Salvar           := True;
-  FNFSE.Configuracoes.Geral.CodigoMunicipio  := 4115200;
+  FNFSE.Configuracoes.Geral.CodigoMunicipio  := 4115200; // <- Veja que isso está fixado na base, trataremos abaixo.
   FNFSE.Configuracoes.WebServices.Ambiente   := FConfig.Ambiente;
   FNFSE.Configuracoes.WebServices.Visualizar := False;
 
@@ -296,25 +303,42 @@ begin
   lNota.NFSE.Prestador.Contato.Email    := FPrestador.Email;
 
   lNota.NFSE.Tomador.AtualizaTomador := snNao;
-  lNota.NFSE.Tomador.TomadorExterior := snNao;
 
-  lNota.NFSE.Tomador.IdentificacaoTomador.CpfCnpj := FTomador.CNPJ;
-  lNota.NFSE.Tomador.RazaoSocial                  := FTomador.RazaoSocial;
-  lNota.NFSE.Tomador.Endereco.Endereco            := FTomador.Endereco;
-  lNota.NFSE.Tomador.Endereco.Numero              := FTomador.Numero;
-  lNota.NFSE.Tomador.Endereco.Complemento         := FTomador.Complemento;
-  lNota.NFSE.Tomador.Endereco.Bairro              := FTomador.Bairro;
-  lNota.NFSE.Tomador.Endereco.CodigoMunicipio     := FTomador.CodigoMunicipioIBGE.ToString;
-  lNota.NFSE.Tomador.Endereco.UF                  := FTomador.UF;
-  lNota.NFSE.Tomador.Endereco.CEP                 := FTomador.CEP;
-  lNota.NFSE.Tomador.Contato.Telefone             := FTomador.Telefone;
-  lNota.NFSE.Tomador.Contato.Email                := FTomador.Email;
+  if FConfig.CodigoMunicipioIBGE = FTomador.CodigoMunicipioIBGE then
+    lNota.NFSE.Tomador.IdentificacaoTomador.Tipo := tpPJdoMunicipio
+  else
+    lNota.NFSE.Tomador.IdentificacaoTomador.Tipo := tpPJforaMunicipio;
+
+  if (FTomador.UF = 'EX') then
+  begin
+    lNota.NFSE.Tomador.TomadorExterior                     := snSim;
+    lNota.NFSE.Tomador.IdentificacaoTomador.Tipo           := tpPJforaPais;
+    lNota.NFSE.Tomador.IdentificacaoTomador.DocEstrangeiro := FTomador.CNPJ;
+    lNota.NFSE.Tomador.Endereco.CodigoMunicipio            := '9999999';
+    lNota.NFSE.Tomador.Endereco.xMunicipio                 := 'Exterior';
+  end
+  else
+  begin
+    lNota.NFSE.Tomador.TomadorExterior              := snNao;
+    lNota.NFSE.Tomador.IdentificacaoTomador.CpfCnpj := FTomador.CNPJ;
+    lNota.NFSE.Tomador.RazaoSocial                  := FTomador.RazaoSocial;
+    lNota.NFSE.Tomador.Endereco.CodigoMunicipio     := FTomador.CodigoMunicipioIBGE.ToString;
+    lNota.NFSE.Tomador.Endereco.xMunicipio          := FTomador.Cidade;
+  end;
+
+  lNota.NFSE.Tomador.Endereco.Numero      := FTomador.Numero;
+  lNota.NFSE.Tomador.Endereco.Complemento := FTomador.Complemento;
+  lNota.NFSE.Tomador.Endereco.Bairro      := FTomador.Bairro;
+  lNota.NFSE.Tomador.Endereco.UF          := FTomador.UF;
+  lNota.NFSE.Tomador.Endereco.CEP         := FTomador.CEP;
+  lNota.NFSE.Tomador.Contato.Telefone     := FTomador.Telefone;
+  lNota.NFSE.Tomador.Contato.Email        := FTomador.Email;
 end;
 
-procedure TModelNFSE.checkResponse(AMetodo: TMetodo; ANumRPS: Integer);
+function TModelNFSE.checkResponse(AMetodo: TMetodo; ANumRPS: Integer): string;
 var
-  lStream : TStringStream;
   lMemoLog: TMemo;
+  lSucess : Boolean;
 begin
   lMemoLog := TMemo.Create(Nil);
   try
@@ -343,16 +367,9 @@ begin
               lMemoLog.Lines.Add('Código Verif.  : ' + CodigoVerificacao);
               lMemoLog.Lines.Add('Sucesso        : ' + BoolToStr(Sucesso, True));
 
-              if Sucesso then
-              begin
-                lStream := TStringStream.Create(XmlEnvio, TEncoding.UTF8);
-                try
-                  // PodeColocarAtualizacaoBanco
-                finally
-                  lStream.Free;
-                end;
-              end
-              else
+              lSucess := Sucesso;
+
+              if not Sucesso then
               begin
                 if Erros.Count > 0 then
                 begin
@@ -633,18 +650,41 @@ begin
           lMemoLog.Lines.Add('==> Xml da nota não salvo em disco.');
       end;
     end;
+
+    if not lSucess then
+      raise Exception.Create(lMemoLog.Text);
   finally
     lMemoLog.Free;
   end;
 end;
 
-procedure TModelNFSE.Enviar;
+procedure TModelNFSE.executeIssuance;
 begin
-  loadComponent;
-  setData;
   FNFSE.Emitir(FData.NumeroLote.ToString, meAutomatico, False);
-  checkResponse(tmRecepcionar, FData.NumeroRps);
+end;
+
+procedure TModelNFSE.executePrint;
+begin
   FNFSE.NotasFiscais.Imprimir;
+end;
+
+function TModelNFSE.Enviar(APrint: Boolean): TModelResult;
+begin
+  try
+    result.result := True;
+
+    loadComponent;
+    setData;
+    executeIssuance;
+    result.response := checkResponse(tmRecepcionar, FData.NumeroRps);
+    if APrint then
+      executePrint;
+  except
+    on e: Exception do
+    begin
+      result.result := False;
+    end;
+  end;
 end;
 
 end.

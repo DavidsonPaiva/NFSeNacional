@@ -9,7 +9,8 @@ uses
   Model.NFSE in 'Model\Model.NFSE.pas',
   Entity.Tomador in 'Entity\Entity.Tomador.pas',
   Entity.Prestador in 'Entity\Entity.Prestador.pas',
-  Entity.Servico in 'Entity\Entity.Servico.pas';
+  Entity.Servico in 'Entity\Entity.Servico.pas',
+  Model.NFSE.CampoGrande in 'Model\Model.NFSE.CampoGrande.pas';
 
 {$R *.res}
 

@@ -9,7 +9,8 @@ uses
   Entity.Data,
   Entity.Servico,
   Entity.Prestador,
-  Entity.Tomador;
+  Entity.Tomador,
+  Model.NFSE;
 
 type
   IControllerNFSE = interface
@@ -29,6 +30,8 @@ type
     FServico  : INFSeServico;
     FTomador  : INFSeTomador;
     FPrestador: INFSePrestador;
+
+    function ObterModelPorIBGE(ACodigoIBGE: Integer): IModelNFSE;
   protected
     function Config(AValue: INFSeConfig): IControllerNFSE;
     function Data(AValue: INFSeData): IControllerNFSE;
@@ -47,7 +50,7 @@ implementation
 { TControllerNFSE }
 
 uses
-  Model.NFSE;
+  Model.NFSE.CampoGrande;
 
 constructor TControllerNFSE.Create;
 begin
@@ -93,7 +96,18 @@ begin
   FTomador := AValue;
 end;
 
+function TControllerNFSE.ObterModelPorIBGE(ACodigoIBGE: Integer): IModelNFSE;
+begin
+  case ACodigoIBGE of
+    5002704: Result := TModelNFSECampoGrande.New;
+    else
+        Result := TModelNFSE.New;
+  end;
+end;
+
 procedure TControllerNFSE.Send;
+var
+  lModel: IModelNFSE;
 begin
   if not Assigned(FConfig) then
     raise Exception.Create('Config não atribuída no Controller.');
@@ -120,7 +134,9 @@ begin
 
   FTomador.Validate;
 
-  TModelNFSE.New
+  lModel := ObterModelPorIBGE(FConfig.CodigoMunicipioIBGE);
+
+  lModel
     .Config(FConfig)
     .Data(FData)
     .Servico(FServico)

@@ -118,6 +118,7 @@
         <DCCReference Include="Entity\Entity.Tomador.pas"/>
         <DCCReference Include="Entity\Entity.Prestador.pas"/>
         <DCCReference Include="Entity\Entity.Servico.pas"/>
+        <DCCReference Include="Model\Model.NFSE.CampoGrande.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

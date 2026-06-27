@@ -30,6 +30,9 @@ type
     function CodigoMunicipioIBGE(AValue: Integer): INFSeTomador; overload;
     function CodigoMunicipioIBGE: Integer; overload;
 
+    function Cidade(AValue: string): INFSeTomador; overload;
+    function Cidade: string; overload;
+
     function UF(AValue: string): INFSeTomador; overload;
     function UF: string; overload;
 
@@ -55,6 +58,7 @@ type
     FComplemento        : string;
     FBairro             : string;
     FCodigoMunicipioIBGE: Integer;
+    FCidade             : string;
     FUF                 : string;
     FCEP                : string;
     FTelefone           : string;
@@ -80,6 +84,9 @@ type
 
     function CodigoMunicipioIBGE(AValue: Integer): INFSeTomador; overload;
     function CodigoMunicipioIBGE: Integer; overload;
+
+    function Cidade(AValue: string): INFSeTomador; overload;
+    function Cidade: string; overload;
 
     function UF(AValue: string): INFSeTomador; overload;
     function UF: string; overload;
@@ -177,6 +184,12 @@ begin
   FCodigoMunicipioIBGE := AValue;
 end;
 
+function TNFSeTomador.Cidade(AValue: string): INFSeTomador;
+begin
+  Result  := Self;
+  FCidade := AValue;
+end;
+
 function TNFSeTomador.UF(AValue: string): INFSeTomador;
 begin
   Result := Self;
@@ -246,6 +259,11 @@ begin
   Result := OnlyNumber(FCEP);
 end;
 
+function TNFSeTomador.Cidade: string;
+begin
+  Result := FCidade.Trim.ToUpper;
+end;
+
 function TNFSeTomador.Telefone: string;
 begin
   Result := OnlyNumber(FTelefone);
@@ -278,6 +296,9 @@ begin
 
   if FCodigoMunicipioIBGE <= 0 then
     raise Exception.Create('Favor preencher o código IBGE do município do tomador.');
+
+  if FCidade.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a cidade do tomador.');
 
   if FUF.Trim.IsEmpty then
     raise Exception.Create('Favor preencher a UF do tomador.');
