@@ -10,7 +10,8 @@ uses
   Entity.Servico,
   Entity.Prestador,
   Entity.Tomador,
-  Model.NFSE;
+  Model.NFSE,
+  Types.NFSE;
 
 type
   IControllerNFSE = interface
@@ -20,7 +21,7 @@ type
     function Servico(AValue: INFSeServico): IControllerNFSE;
     function Tomador(AValue: INFSeTomador): IControllerNFSE;
     function Prestador(AValue: INFSePrestador): IControllerNFSE;
-    procedure Send;
+    function Send(APrint: Boolean = False): TModelResult;
   end;
 
   TControllerNFSE = class(TInterfacedObject, IControllerNFSE)
@@ -38,7 +39,7 @@ type
     function Servico(AValue: INFSeServico): IControllerNFSE;
     function Tomador(AValue: INFSeTomador): IControllerNFSE;
     function Prestador(AValue: INFSePrestador): IControllerNFSE;
-    procedure Send;
+    function Send(APrint: Boolean = False): TModelResult;
   public
     constructor Create;
     destructor Destroy; override;
@@ -105,7 +106,7 @@ begin
   end;
 end;
 
-procedure TControllerNFSE.Send;
+function TControllerNFSE.Send(APrint: Boolean = False): TModelResult;
 var
   lModel: IModelNFSE;
 begin
@@ -136,13 +137,13 @@ begin
 
   lModel := ObterModelPorIBGE(FConfig.CodigoMunicipioIBGE);
 
-  lModel
+  Result := lModel
     .Config(FConfig)
     .Data(FData)
     .Servico(FServico)
     .Prestador(FPrestador)
     .Tomador(FTomador)
-    .Enviar;
+    .Enviar(APrint);
 end;
 
 end.

@@ -17,14 +17,167 @@ uses
   ACBrBase,
   ACBrDFeReport,
   ACBrNFSeXDANFSeClass,
-  ACBrNFSeXDANFSeRLClass;
+  ACBrNFSeXDANFSeRLClass,
+  cxGraphics,
+  cxControls,
+  cxLookAndFeels,
+  cxLookAndFeelPainters,
+  cxContainer,
+  cxEdit,
+  dxSkinsCore,
+  dxSkinBasic,
+  dxSkinBlack,
+  dxSkinBlue,
+  dxSkinBlueprint,
+  dxSkinCaramel,
+  dxSkinCoffee,
+  dxSkinDarkroom,
+  dxSkinDarkSide,
+  dxSkinDevExpressDarkStyle,
+  dxSkinDevExpressStyle,
+  dxSkinFoggy,
+  dxSkinGlassOceans,
+  dxSkinHighContrast,
+  dxSkiniMaginary,
+  dxSkinLilian,
+  dxSkinLiquidSky,
+  dxSkinLondonLiquidSky,
+  dxSkinMcSkin,
+  dxSkinMetropolis,
+  dxSkinMetropolisDark,
+  dxSkinMoneyTwins,
+  dxSkinOffice2007Black,
+  dxSkinOffice2007Blue,
+  dxSkinOffice2007Green,
+  dxSkinOffice2007Pink,
+  dxSkinOffice2007Silver,
+  dxSkinOffice2010Black,
+  dxSkinOffice2010Blue,
+  dxSkinOffice2010Silver,
+  dxSkinOffice2013DarkGray,
+  dxSkinOffice2013LightGray,
+  dxSkinOffice2013White,
+  dxSkinOffice2016Colorful,
+  dxSkinOffice2016Dark,
+  dxSkinOffice2019Black,
+  dxSkinOffice2019Colorful,
+  dxSkinOffice2019DarkGray,
+  dxSkinOffice2019White,
+  dxSkinPumpkin,
+  dxSkinSeven,
+  dxSkinSevenClassic,
+  dxSkinSharp,
+  dxSkinSharpPlus,
+  dxSkinSilver,
+  dxSkinSpringtime,
+  dxSkinStardust,
+  dxSkinSummer2008,
+  dxSkinTheAsphaltWorld,
+  dxSkinTheBezier,
+  dxSkinsDefaultPainters,
+  dxSkinValentine,
+  dxSkinVisualStudio2013Blue,
+  dxSkinVisualStudio2013Dark,
+  dxSkinVisualStudio2013Light,
+  dxSkinVS2010,
+  dxSkinWhiteprint,
+  dxSkinXmas2008Blue,
+  cxGroupBox,
+  Vcl.ExtCtrls,
+  Vcl.Mask,
+  Vcl.ComCtrls,
+  dxBarBuiltInMenu,
+  cxPC,
+  cxTextEdit,
+  cxMaskEdit,
+  cxDropDownEdit,
+  cxCalc,
+  Entity.Config,
+  Entity.Data,
+  Entity.Servico,
+  Entity.Prestador,
+  Entity.Tomador, dxGDIPlusClasses;
 
 type
   TfrmPrincipal = class(TForm)
+    gpbxConfig: TcxGroupBox;
+    gpbxDados: TcxGroupBox;
+    pnlCommand: TPanel;
     btnGerar: TBitBtn;
+    gpbxResult: TcxGroupBox;
+    edtCertificadoDigital: TLabeledEdit;
+    edtPathResposta: TLabeledEdit;
+    edtPathSchemas: TLabeledEdit;
+    edtNomePrefeitura: TLabeledEdit;
+    cbbAmbiente: TComboBox;
+    edtCodigoIBGE: TLabeledEdit;
+    Label1: TLabel;
+    edtRPS: TLabeledEdit;
+    edtSerie: TLabeledEdit;
+    edtDataCompetencia: TDateTimePicker;
+    Label2: TLabel;
+    cbbNaturezaOperacao: TComboBox;
+    Label3: TLabel;
+    Label4: TLabel;
+    cbbIncentivadorCultural: TComboBox;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    cbbRegimeEspecialTrib: TComboBox;
+    cbbOptanteSN: TComboBox;
+    Memo: TMemo;
+    cxPageControl: TcxPageControl;
+    tsServico: TcxTabSheet;
+    tsPrestador: TcxTabSheet;
+    tsTomador: TcxTabSheet;
+    Label9: TLabel;
+    cbbIssRetido: TComboBox;
+    edtBaseCalculo: TcxCalcEdit;
+    edtAliquota: TcxCalcEdit;
+    edtValor: TcxCalcEdit;
+    edtCoditoTribNac: TLabeledEdit;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    edtCodTribMun: TLabeledEdit;
+    edtCNAE: TLabeledEdit;
+    edtCodNBS: TLabeledEdit;
+    edtDiscriminacaoServ: TMemo;
+    Label13: TLabel;
+    edtPrestCNPJ: TLabeledEdit;
+    edtPrestInscMunicipal: TLabeledEdit;
+    edtPrestRazao: TLabeledEdit;
+    edtPrestEndereco: TLabeledEdit;
+    edtPrestEnderecoNumero: TLabeledEdit;
+    edtPrestBairro: TLabeledEdit;
+    edtPrestCEP: TLabeledEdit;
+    edtPrestCidade: TLabeledEdit;
+    edtPrestUF: TLabeledEdit;
+    edtPrestFone: TLabeledEdit;
+    edtPrestEmail: TLabeledEdit;
+    edtTomadorCNPJ: TLabeledEdit;
+    edtTomadorRazao: TLabeledEdit;
+    edtTomadorEndereco: TLabeledEdit;
+    edtTomadorEnderecoNumero: TLabeledEdit;
+    edtTomadorEnderecoComplemento: TLabeledEdit;
+    edtTomadorBairro: TLabeledEdit;
+    edtTomadorCEP: TLabeledEdit;
+    edtTomadorFone: TLabeledEdit;
+    edtTomadorEmail: TLabeledEdit;
+    edtTomadorUF: TLabeledEdit;
+    edtTomadorCodigoIBGE: TLabeledEdit;
+    imgLogo: TImage;
     procedure btnGerarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
+    procedure PopularRegimeEspecial;
+    function GetConfig: INFSeConfig;
+    function GetData: INFSeData;
+    function GetServico: INFSeServico;
+    function GetPrestador: INFSePrestador;
+    function GetTomador: INFSeTomador;
   public
     { Public declarations }
   end;
@@ -38,85 +191,122 @@ implementation
 
 
 uses
+  Types.NFSE,
   Controller.NFSE,
-  Entity.Config,
-  Entity.Data,
-  Entity.Servico,
-  Entity.Prestador,
-  Entity.Tomador,
   ACBrNFSeXConversao,
   ACBrDFe.Conversao;
 
 procedure TfrmPrincipal.btnGerarClick(Sender: TObject);
-var
-  lConfig   : INFSeConfig;
-  lData     : INFSeData;
-  lServico  : INFSeServico;
-  lPrestador: INFSePrestador;
-  lTomador  : INFSeTomador;
 begin
-
-  lConfig := TNFSeConfig.New
-    .CertificadoDigital('')
-    .PathResposta('C:\Temp')
-    .PathSchemas('C:\Temp\Schemas')
-    .Ambiente(taProducao)
-    .CodigoMunicipioIBGE(4115200) // Maringa/PR
-    .NomePrefeitura('Prefeitura Municipal de Maringá');
-
-  lData := TNFSeData.New
-    .NumeroRPS(1)
-    .Serie('1')
-    .Competencia(Date)
-    .NaturezaOperacao(TnfseNaturezaOperacao.no0)
-    .RegimeEspecialTributacao(retNenhum)
-    .OptanteSimplesNacional(snNao)
-    .IncentivadorCultural(snNao);
-
-  lServico := TNFSeServico.New
-    .IssRetido(stNormal)
-    .BaseCalculo(100)
-    .Aliquota(3)
-    .Valor(100)
-    .CodigoTribNac('150505') // https://www.gov.br/nfse/pt-br/mei-e-demais-empresas/codigos-de-tributacao-nacional-nbs
-    .CodigoTribMun('001')
-    .CNAE('6203100')
-    .CodigoNBS('111032200')
-    .Discriminacao('SERVIÇO DE EMISSAO DE NOTA');
-
-  lPrestador := TNFSePrestador.New
-    .CNPJ('')
-    .InscricaoMunicipal('')
-    .RazaoSocial('PAIVA SISTEMA LTDA')
-    .Endereco('RUA CORONEL ATHOS PEREIRA DA SILVEIRA')
-    .Numero('1840')
-    .Bairro('JD. SAO CONRADO')
-    .CEP('79093782')
-    .Cidade('CAMPO GRANDE')
-    .UF('MS')
-    .Telefone('67992677349')
-    .Email('contato@paiva.app.br');
-
-  lTomador := TNFSeTomador.New
-    .CNPJ('')
-    .RazaoSocial('EMPRESA DESTINO')
-    .Endereco('RUA DA EMPRESA DESTINO')
-    .Numero('100')
-    .Complemento('SALA 22')
-    .Bairro('BAIRRO')
-    .CodigoMunicipioIBGE(4115200) // Maringa/PR
-    .UF('PR')
-    .CEP('87015440')
-    .Telefone('4699999999')
-    .Email('meucliente@email.com.br');
-
-  TControllerNFSE.New
-    .Config(lConfig)
-    .Data(lData)
-    .Servico(lServico)
-    .Prestador(lPrestador)
-    .Tomador(lTomador)
+  var
+  lRetorno := TControllerNFSE.New
+    .Config(GetConfig)
+    .Data(GetData)
+    .Servico(GetServico)
+    .Prestador(GetPrestador)
+    .Tomador(GetTomador)
     .Send;
+
+  Memo.Clear;
+
+  if lRetorno.Sucesso then
+  begin
+    Memo.Lines.Add('NFSe emitida com sucesso!' + sLineBreak +
+        'Número da Nota: ' + lRetorno.NumeroNota + sLineBreak +
+        'ChaveAcesso: ' + lRetorno.ChaveAcesso);
+  end
+  else
+  begin
+    Memo.Lines.Add('Erro ao emitir NFSe:' + sLineBreak + lRetorno.MensagemLog);
+  end;
+end;
+
+procedure TfrmPrincipal.FormShow(Sender: TObject);
+begin
+  PopularRegimeEspecial;
+end;
+
+function TfrmPrincipal.GetConfig: INFSeConfig;
+begin
+  Result := TNFSeConfig.New
+    .CertificadoDigital(edtCertificadoDigital.Text)
+    .PathResposta(edtPathResposta.Text)
+    .PathSchemas(edtPathSchemas.Text)
+    .Ambiente(TACBrTipoAmbiente(cbbAmbiente.ItemIndex))
+    .CodigoMunicipioIBGE(StrToIntDef(edtCodigoIBGE.Text, 0))
+    .NomePrefeitura(edtNomePrefeitura.Text);
+end;
+
+function TfrmPrincipal.GetData: INFSeData;
+var
+  lOk: Boolean;
+begin
+  Result := TNFSeData.New
+    .NumeroRPS(StrToIntDef(edtRPS.Text, 0))
+    .Serie(edtSerie.Text)
+    .Competencia(edtDataCompetencia.Date)
+    .NaturezaOperacao(StrToNaturezaOperacao(lOk, cbbNaturezaOperacao.Text))
+    .RegimeEspecialTributacao(TnfseRegimeEspecialTributacao(cbbRegimeEspecialTrib.ItemIndex))
+    .OptanteSimplesNacional(TnfseSimNao(cbbOptanteSN.ItemIndex))
+    .IncentivadorCultural(TnfseSimNao(cbbIncentivadorCultural.ItemIndex));
+end;
+
+function TfrmPrincipal.GetPrestador: INFSePrestador;
+begin
+  Result := TNFSePrestador.New
+    .CNPJ(edtPrestCNPJ.Text)
+    .InscricaoMunicipal(edtPrestInscMunicipal.Text)
+    .RazaoSocial(edtPrestRazao.Text)
+    .Endereco(edtPrestEndereco.Text)
+    .Numero(edtPrestEnderecoNumero.Text)
+    .Bairro(edtPrestBairro.Text)
+    .CEP(edtPrestCEP.Text)
+    .Cidade(edtPrestCidade.Text)
+    .UF(edtPrestUF.Text)
+    .Telefone(edtPrestFone.Text)
+    .Email(edtPrestEmail.Text);
+end;
+
+function TfrmPrincipal.GetServico: INFSeServico;
+begin
+  Result := TNFSeServico.New
+    .IssRetido(TnfseSituacaoTributaria(cbbIssRetido.ItemIndex))
+    .BaseCalculo(edtBaseCalculo.Value)
+    .Aliquota(edtAliquota.Value)
+    .Valor(edtValor.Value)
+    .CodigoTribNac(edtCoditoTribNac.Text) // https://www.gov.br/nfse/pt-br/mei-e-demais-empresas/codigos-de-tributacao-nacional-nbs
+    .CodigoTribMun(edtCodTribMun.Text)
+    .CNAE(edtCNAE.Text)
+    .CodigoNBS(edtCodNBS.Text)
+    .Discriminacao(edtDiscriminacaoServ.Text);
+end;
+
+function TfrmPrincipal.GetTomador: INFSeTomador;
+begin
+  Result := TNFSeTomador.New
+    .CNPJ(edtTomadorCNPJ.Text)
+    .RazaoSocial(edtTomadorRazao.Text)
+    .Endereco(edtTomadorEndereco.Text)
+    .Numero(edtTomadorEnderecoNumero.Text)
+    .Complemento(edtTomadorEnderecoComplemento.Text)
+    .Bairro(edtTomadorBairro.Text)
+    .CodigoMunicipioIBGE(StrToIntDef(edtTomadorCodigoIBGE.Text, 0)) // Maringa/PR
+    .UF(edtTomadorUF.Text)
+    .CEP(edtTomadorCEP.Text)
+    .Telefone(edtTomadorFone.Text)
+    .Email(edtTomadorEmail.Text);
+end;
+
+procedure TfrmPrincipal.PopularRegimeEspecial;
+begin
+  cbbNaturezaOperacao.Clear;
+
+  for var idx := Low(TNaturezaOperacaoArrayStrings) to High(TNaturezaOperacaoArrayStrings) do
+  begin
+    cbbNaturezaOperacao.Items.Add(TNaturezaOperacaoArrayStrings[idx]);
+  end;
+
+  cbbNaturezaOperacao.ItemIndex := 0;
 end;
 
 end.

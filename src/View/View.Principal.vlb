@@ -1,0 +1,13 @@
+﻿[]
+Coordinates=10,78,92,36
+
+[pnlCommand]
+Coordinates=10,10,55,58
+Visible=True
+
+[gpbxDados]
+Coordinates=252,10,92,36
+
+[gpbxConfig]
+Coordinates=112,78,92,36
+

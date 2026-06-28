@@ -21,14 +21,12 @@ uses
 { TModelNFSECampoGrande }
 
 procedure TModelNFSECampoGrande.setData;
-var
-  lNota: TNotaFiscal;
+// var
+// lNota: TNotaFiscal;
 begin
   inherited;
-
-  lNota := FNFSE.NotasFiscais.Items[0];
-
   // Exemplo: Campo Grande pode exigir alguma tag de incentivo fiscal ou regime diferente
+  // lNota := FNFSE.NotasFiscais.Items[0];
   // lNota.NFSE.RegimeEspecialTributacao := retMicroempresaMunicipal;
   // lNota.NFSE.IncentivadorCultural     := snNao;
 end;

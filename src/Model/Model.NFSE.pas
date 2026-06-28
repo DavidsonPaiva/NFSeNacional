@@ -28,6 +28,7 @@ uses
   ACBrNFSeXWebserviceBase,
   ACBrNFSeXDANFSeClass,
   ACBrNFSeXDANFSeRLClass,
+  Types.NFSE,
   Entity.Config,
   Entity.Data,
   Entity.Servico,
@@ -42,12 +43,7 @@ type
     function Servico(AValue: INFSeServico): IModelNFSE;
     function Tomador(AValue: INFSeTomador): IModelNFSE;
     function Prestador(AValue: INFSePrestador): IModelNFSE;
-    procedure Enviar;
-  end;
-
-  TModelResult = record
-    result: Boolean;
-    response: string;
+    function Enviar(APrint: Boolean = True): TModelResult;
   end;
 
   TModelNFSE = class(TInterfacedObject, IModelNFSE)
@@ -101,36 +97,36 @@ end;
 
 class function TModelNFSE.New: IModelNFSE;
 begin
-  result := Self.Create;
+  Result := Self.Create;
 end;
 
 function TModelNFSE.Config(AValue: INFSeConfig): IModelNFSE;
 begin
-  result  := Self;
+  Result  := Self;
   FConfig := AValue;
 end;
 
 function TModelNFSE.Data(AValue: INFSeData): IModelNFSE;
 begin
-  result := Self;
+  Result := Self;
   FData  := AValue;
 end;
 
 function TModelNFSE.Prestador(AValue: INFSePrestador): IModelNFSE;
 begin
-  result     := Self;
+  Result     := Self;
   FPrestador := AValue;
 end;
 
 function TModelNFSE.Tomador(AValue: INFSeTomador): IModelNFSE;
 begin
-  result   := Self;
+  Result   := Self;
   FTomador := AValue;
 end;
 
 function TModelNFSE.Servico(AValue: INFSeServico): IModelNFSE;
 begin
-  result   := Self;
+  Result   := Self;
   FServico := AValue;
 end;
 
@@ -340,6 +336,8 @@ var
   lMemoLog: TMemo;
   lSucess : Boolean;
 begin
+  lSucess := False;
+
   lMemoLog := TMemo.Create(Nil);
   try
     lMemoLog.Lines.Clear;
@@ -653,6 +651,8 @@ begin
 
     if not lSucess then
       raise Exception.Create(lMemoLog.Text);
+
+    Result := lMemoLog.Text;
   finally
     lMemoLog.Free;
   end;
@@ -670,19 +670,34 @@ end;
 
 function TModelNFSE.Enviar(APrint: Boolean): TModelResult;
 begin
-  try
-    result.result := True;
+  FillChar(Result, SizeOf(Result), 0);
 
+  try
     loadComponent;
     setData;
     executeIssuance;
-    result.response := checkResponse(tmRecepcionar, FData.NumeroRps);
+    Result.MensagemLog := checkResponse(tmRecepcionar, FData.NumeroRps);
+    Result.Sucesso     := True;
+
+    if FNFSE.NotasFiscais.Count > 0 then
+    begin
+      Result.NumeroNota     := FNFSE.NotasFiscais.Items[0].NFSE.Numero;
+      Result.ChaveAcesso    := FNFSE.NotasFiscais.Items[0].NFSE.CodigoVerificacao;
+      Result.Protocolo      := FNFSE.WebService.Emite.Protocolo;
+      Result.LinkNota       := FNFSE.NotasFiscais.Items[0].NFSE.Link;
+      Result.NomeArquivoXML := FNFSE.NotasFiscais.Items[0].NomeArq;
+    end;
+
     if APrint then
       executePrint;
   except
-    on e: Exception do
+    on E: Exception do
     begin
-      result.result := False;
+      Result.Sucesso     := False;
+      Result.MensagemLog := 'Falha na emissão da NFSe: ' + E.Message;
+
+      if FNFSE.WebService.Emite.Protocolo <> '' then
+        Result.Protocolo := FNFSE.WebService.Emite.Protocolo;
     end;
   end;
 end;
