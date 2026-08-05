@@ -11,6 +11,7 @@ uses
   System.SysUtils,
   System.DateUtils,
   System.Generics.Collections,
+  Types.NFSE,
   ACBrBase,
   ACBrUtil.Base,
   ACBrUtil.DateTime,
@@ -28,12 +29,12 @@ uses
   ACBrNFSeXWebserviceBase,
   ACBrNFSeXDANFSeClass,
   ACBrNFSeXDANFSeRLClass,
-  Types.NFSE,
   Entity.Config,
   Entity.Data,
   Entity.Servico,
   Entity.Prestador,
-  Entity.Tomador;
+  Entity.Tomador,
+  Entity.ReformaTributaria;
 
 type
   IModelNFSE = interface
@@ -43,6 +44,7 @@ type
     function Servico(AValue: INFSeServico): IModelNFSE;
     function Tomador(AValue: INFSeTomador): IModelNFSE;
     function Prestador(AValue: INFSePrestador): IModelNFSE;
+    function ReformaTributaria(AValue: INFSeReformaTrib): IModelNFSE;
     function Enviar(APrint: Boolean = True): TModelResult;
   end;
 
@@ -50,12 +52,13 @@ type
   private
     FDanfse: TACBrNFSeXDANFSeRL;
   protected
-    FNFSE     : TACBrNFSeX;
-    FConfig   : INFSeConfig;
-    FData     : INFSeData;
-    FServico  : INFSeServico;
-    FTomador  : INFSeTomador;
-    FPrestador: INFSePrestador;
+    FNFSE       : TACBrNFSeX;
+    FConfig     : INFSeConfig;
+    FData       : INFSeData;
+    FServico    : INFSeServico;
+    FTomador    : INFSeTomador;
+    FPrestador  : INFSePrestador;
+    FReformaTrib: INFSeReformaTrib;
 
     procedure loadComponent; virtual;
     procedure setData; virtual;
@@ -68,6 +71,7 @@ type
     function Servico(AValue: INFSeServico): IModelNFSE;
     function Tomador(AValue: INFSeTomador): IModelNFSE;
     function Prestador(AValue: INFSePrestador): IModelNFSE;
+    function ReformaTributaria(AValue: INFSeReformaTrib): IModelNFSE;
     function Enviar(APrint: Boolean = True): TModelResult; virtual;
   public
     constructor Create; virtual;
@@ -116,6 +120,12 @@ function TModelNFSE.Prestador(AValue: INFSePrestador): IModelNFSE;
 begin
   Result     := Self;
   FPrestador := AValue;
+end;
+
+function TModelNFSE.ReformaTributaria(AValue: INFSeReformaTrib): IModelNFSE;
+begin
+  Result       := Self;
+  FReformaTrib := AValue;
 end;
 
 function TModelNFSE.Tomador(AValue: INFSeTomador): IModelNFSE;
@@ -329,6 +339,20 @@ begin
   lNota.NFSE.Tomador.Endereco.CEP         := FTomador.CEP;
   lNota.NFSE.Tomador.Contato.Telefone     := FTomador.Telefone;
   lNota.NFSE.Tomador.Contato.Email        := FTomador.Email;
+
+  lNota.NFSE.IBSCBS.finNFSe  := fnfsRegular;
+  lNota.NFSE.IBSCBS.indFinal := ifNao;
+  lNota.NFSE.IBSCBS.cIndOp   := FReformaTrib.IndicadorOperacao;
+  lNota.NFSE.IBSCBS.tpOper   := TtpOperGovNFSe.togNenhum;
+
+  lNota.NFSE.IBSCBS.indDest := idTomadorAdquirenteDestinatarioIguais;
+
+  lNota.NFSE.IBSCBS.Valores.trib.gIBSCBS.CST        := FReformaTrib.CST;
+  lNota.NFSE.IBSCBS.Valores.trib.gIBSCBS.cClassTrib := FReformaTrib.ClassTrib;
+  lNota.NFSE.IBSCBS.Valores.trib.gIBSCBS.cCredPres  := cpNenhum;
+
+  lNota.NFSE.IBSCBS.Valores.trib.gIBSCBS.gTribRegular.CSTReg        := cstNenhum;
+  lNota.NFSE.IBSCBS.Valores.trib.gIBSCBS.gTribRegular.cClassTribReg := '';
 end;
 
 function TModelNFSE.checkResponse(AMetodo: TMetodo; ANumRPS: Integer): string;

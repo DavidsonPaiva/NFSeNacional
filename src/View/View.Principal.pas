@@ -16,8 +16,15 @@ uses
   Vcl.Buttons,
   ACBrBase,
   ACBrDFeReport,
+  ACBrDFe.Conversao,
   ACBrNFSeXDANFSeClass,
   ACBrNFSeXDANFSeRLClass,
+  Entity.Config,
+  Entity.Data,
+  Entity.Servico,
+  Entity.Prestador,
+  Entity.Tomador,
+  Entity.ReformaTributaria,
   cxGraphics,
   cxControls,
   cxLookAndFeels,
@@ -92,11 +99,7 @@ uses
   cxMaskEdit,
   cxDropDownEdit,
   cxCalc,
-  Entity.Config,
-  Entity.Data,
-  Entity.Servico,
-  Entity.Prestador,
-  Entity.Tomador, dxGDIPlusClasses;
+  dxGDIPlusClasses;
 
 type
   TfrmPrincipal = class(TForm)
@@ -168,16 +171,23 @@ type
     edtTomadorUF: TLabeledEdit;
     edtTomadorCodigoIBGE: TLabeledEdit;
     imgLogo: TImage;
+    gpbxIBSCSB: TcxGroupBox;
+    edtIndOper: TLabeledEdit;
+    edtClassTrib: TLabeledEdit;
+    cbbCSTIBSCBS: TComboBox;
+    Label14: TLabel;
     procedure btnGerarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     procedure PopularRegimeEspecial;
+    procedure PopularCSTIBSCBS;
     function GetConfig: INFSeConfig;
     function GetData: INFSeData;
     function GetServico: INFSeServico;
     function GetPrestador: INFSePrestador;
     function GetTomador: INFSeTomador;
+    function GetReformaTrib: INFSeReformaTrib;
   public
     { Public declarations }
   end;
@@ -193,8 +203,7 @@ implementation
 uses
   Types.NFSE,
   Controller.NFSE,
-  ACBrNFSeXConversao,
-  ACBrDFe.Conversao;
+  ACBrNFSeXConversao;
 
 procedure TfrmPrincipal.btnGerarClick(Sender: TObject);
 begin
@@ -205,6 +214,7 @@ begin
     .Servico(GetServico)
     .Prestador(GetPrestador)
     .Tomador(GetTomador)
+    .ReformaTrib(GetReformaTrib)
     .Send;
 
   Memo.Clear;
@@ -224,6 +234,7 @@ end;
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
   PopularRegimeEspecial;
+  PopularCSTIBSCBS;
 end;
 
 function TfrmPrincipal.GetConfig: INFSeConfig;
@@ -242,6 +253,7 @@ var
   lOk: Boolean;
 begin
   Result := TNFSeData.New
+    .NumeroLote(StrToIntDef(edtRPS.Text, 0))
     .NumeroRPS(StrToIntDef(edtRPS.Text, 0))
     .Serie(edtSerie.Text)
     .Competencia(edtDataCompetencia.Date)
@@ -265,6 +277,14 @@ begin
     .UF(edtPrestUF.Text)
     .Telefone(edtPrestFone.Text)
     .Email(edtPrestEmail.Text);
+end;
+
+function TfrmPrincipal.GetReformaTrib: INFSeReformaTrib;
+begin
+  Result := TNFSeReformaTrib.New
+    .IndicadorOperacao(edtIndOper.Text)
+    .CST(TCSTIBSCBS(cbbCSTIBSCBS.ItemIndex))
+    .Classtrib(edtClassTrib.Text);
 end;
 
 function TfrmPrincipal.GetServico: INFSeServico;
@@ -307,6 +327,18 @@ begin
   end;
 
   cbbNaturezaOperacao.ItemIndex := 0;
+end;
+
+procedure TfrmPrincipal.PopularCSTIBSCBS;
+begin
+  cbbCSTIBSCBS.Clear;
+
+  for var idx := Low(TCSTIBSCBSArrayStrings) to High(TCSTIBSCBSArrayStrings) do
+  begin
+    cbbCSTIBSCBS.Items.Add(TCSTIBSCBSArrayStrings[idx]);
+  end;
+
+  cbbCSTIBSCBS.ItemIndex := 1;
 end;
 
 end.

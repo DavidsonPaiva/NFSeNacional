@@ -126,6 +126,7 @@
         <DCCReference Include="Entity\Entity.Servico.pas"/>
         <DCCReference Include="Model\Model.NFSE.CampoGrande.pas"/>
         <DCCReference Include="Entity\Types.NFSE.pas"/>
+        <DCCReference Include="Entity\Entity.ReformaTributaria.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

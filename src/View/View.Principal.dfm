@@ -69343,6 +69343,7 @@ object frmPrincipal: TfrmPrincipal
       Top = 44
       Width = 425
       Height = 22
+      Cursor = crHandPoint
       Style = csOwnerDrawFixed
       ItemIndex = 0
       TabOrder = 6
@@ -69429,9 +69430,8 @@ object frmPrincipal: TfrmPrincipal
     StyleDisabled.LookAndFeel.NativeStyle = False
     StyleDisabled.LookAndFeel.SkinName = 'SevenClassic'
     TabOrder = 3
-    ExplicitTop = 489
     ExplicitWidth = 1020
-    ExplicitHeight = 237
+    ExplicitHeight = 325
     Height = 326
     Width = 1024
     object Memo: TMemo
@@ -69444,7 +69444,7 @@ object frmPrincipal: TfrmPrincipal
       ReadOnly = True
       TabOrder = 0
       ExplicitWidth = 1014
-      ExplicitHeight = 207
+      ExplicitHeight = 295
     end
   end
   object cxPageControl: TcxPageControl
@@ -69458,6 +69458,7 @@ object frmPrincipal: TfrmPrincipal
     Properties.CustomButtons.Buttons = <>
     LookAndFeel.NativeStyle = False
     LookAndFeel.SkinName = 'DevExpressStyle'
+    ExplicitWidth = 1020
     ClientRectBottom = 176
     ClientRectLeft = 2
     ClientRectRight = 1018
@@ -69466,7 +69467,6 @@ object frmPrincipal: TfrmPrincipal
       Caption = '[ &1 - Servi'#231'o]'
       ImageIndex = 0
       ExplicitWidth = 1012
-      ExplicitHeight = 235
       object Label9: TLabel
         Left = 49
         Top = 12
@@ -69642,11 +69642,97 @@ object frmPrincipal: TfrmPrincipal
         TabOrder = 8
         WantTabs = True
       end
+      object gpbxIBSCSB: TcxGroupBox
+        Left = 640
+        Top = 3
+        Caption = 'IBS/CBS'
+        Style.Color = clBtnFace
+        Style.LookAndFeel.NativeStyle = False
+        Style.LookAndFeel.SkinName = 'SevenClassic'
+        StyleDisabled.LookAndFeel.NativeStyle = False
+        StyleDisabled.LookAndFeel.SkinName = 'SevenClassic'
+        TabOrder = 9
+        Height = 80
+        Width = 373
+        object Label14: TLabel
+          Left = 242
+          Top = 18
+          Width = 30
+          Height = 15
+          Caption = 'CST:  '
+        end
+        object edtIndOper: TLabeledEdit
+          Left = 98
+          Top = 15
+          Width = 129
+          Height = 23
+          Alignment = taCenter
+          EditLabel.Width = 80
+          EditLabel.Height = 23
+          EditLabel.BiDiMode = bdLeftToRight
+          EditLabel.Caption = 'Ind. Opera'#231#227'o: '
+          EditLabel.ParentBiDiMode = False
+          LabelPosition = lpLeft
+          TabOrder = 0
+          Text = '100501'
+        end
+        object edtClassTrib: TLabeledEdit
+          Left = 98
+          Top = 44
+          Width = 129
+          Height = 23
+          Alignment = taCenter
+          EditLabel.Width = 62
+          EditLabel.Height = 23
+          EditLabel.BiDiMode = bdLeftToRight
+          EditLabel.Caption = 'Class. Trib:  '
+          EditLabel.ParentBiDiMode = False
+          LabelPosition = lpLeft
+          TabOrder = 1
+          Text = '000001'
+        end
+        object cbbCSTIBSCBS: TComboBox
+          Left = 278
+          Top = 15
+          Width = 89
+          Height = 22
+          Cursor = crHandPoint
+          Style = csOwnerDrawFixed
+          ItemIndex = 0
+          TabOrder = 2
+          Text = 'Nenhum'
+          Items.Strings = (
+            'Nenhum'
+            'Microempresa Municipal '
+            'Estimativa '
+            'Sociedades de Profissionais '
+            'Ato Cooperado'
+            'Microempresa Individual'
+            'Microempresa PP'
+            'Lucro Real'
+            'Lucro Presumido'
+            'Simples Nacional'
+            'Imune'
+            'Empresa Individual EIRELI'
+            'Empresa PP'
+            'Microempresa'
+            'Outros'
+            'Movimento Mensal'
+            'Profissional Aut'#244'nomo '
+            'ISSQNSociedade'
+            'Not'#225'rio ou Registrador '
+            'Faturamento Vari'#225'vel'
+            'Fixo'
+            'Isen'#231#227'o'
+            'Suspens'#227'o Judicial'
+            'Suspensa'#245' Adm'
+            '')
+        end
+      end
     end
     object tsPrestador: TcxTabSheet
       Caption = '[ &2 - Prestador ]'
       ImageIndex = 1
-      ExplicitHeight = 235
       object edtPrestCNPJ: TLabeledEdit
         Left = 101
         Top = 7
@@ -69797,7 +69883,6 @@ object frmPrincipal: TfrmPrincipal
     object tsTomador: TcxTabSheet
       Caption = '[ &3 - Tomador ]'
       ImageIndex = 2
-      ExplicitLeft = 5
       object edtTomadorCNPJ: TLabeledEdit
         Left = 109
         Top = 8

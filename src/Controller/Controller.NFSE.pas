@@ -10,6 +10,7 @@ uses
   Entity.Servico,
   Entity.Prestador,
   Entity.Tomador,
+  Entity.ReformaTributaria,
   Model.NFSE,
   Types.NFSE;
 
@@ -21,16 +22,18 @@ type
     function Servico(AValue: INFSeServico): IControllerNFSE;
     function Tomador(AValue: INFSeTomador): IControllerNFSE;
     function Prestador(AValue: INFSePrestador): IControllerNFSE;
+    function ReformaTrib(AValue: INFSeReformaTrib): IControllerNFSE;
     function Send(APrint: Boolean = False): TModelResult;
   end;
 
   TControllerNFSE = class(TInterfacedObject, IControllerNFSE)
   private
-    FConfig   : INFSeConfig;
-    FData     : INFSeData;
-    FServico  : INFSeServico;
-    FTomador  : INFSeTomador;
-    FPrestador: INFSePrestador;
+    FConfig     : INFSeConfig;
+    FData       : INFSeData;
+    FServico    : INFSeServico;
+    FTomador    : INFSeTomador;
+    FPrestador  : INFSePrestador;
+    FReformaTrib: INFSeReformaTrib;
 
     function ObterModelPorIBGE(ACodigoIBGE: Integer): IModelNFSE;
   protected
@@ -39,6 +42,7 @@ type
     function Servico(AValue: INFSeServico): IControllerNFSE;
     function Tomador(AValue: INFSeTomador): IControllerNFSE;
     function Prestador(AValue: INFSePrestador): IControllerNFSE;
+    function ReformaTrib(AValue: INFSeReformaTrib): IControllerNFSE;
     function Send(APrint: Boolean = False): TModelResult;
   public
     constructor Create;
@@ -97,6 +101,12 @@ begin
   FTomador := AValue;
 end;
 
+function TControllerNFSE.ReformaTrib(AValue: INFSeReformaTrib): IControllerNFSE;
+begin
+  Result       := Self;
+  FReformaTrib := AValue;
+end;
+
 function TControllerNFSE.ObterModelPorIBGE(ACodigoIBGE: Integer): IModelNFSE;
 begin
   case ACodigoIBGE of
@@ -135,6 +145,11 @@ begin
 
   FTomador.Validate;
 
+  if not Assigned(FReformaTrib) then
+    raise Exception.Create('Reforma tributária não atribuído no Controller.');
+
+  FReformaTrib.Validate;
+
   lModel := ObterModelPorIBGE(FConfig.CodigoMunicipioIBGE);
 
   Result := lModel
@@ -143,6 +158,7 @@ begin
     .Servico(FServico)
     .Prestador(FPrestador)
     .Tomador(FTomador)
+    .ReformaTributaria(FReformaTrib)
     .Enviar(APrint);
 end;
 
