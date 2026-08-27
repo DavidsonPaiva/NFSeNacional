@@ -69391,14 +69391,14 @@ object frmPrincipal: TfrmPrincipal
   end
   object pnlCommand: TPanel
     Left = 0
-    Top = 727
+    Top = 401
     Width = 1024
     Height = 41
-    Align = alBottom
+    Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitTop = 726
-    ExplicitWidth = 1020
+    ExplicitLeft = 8
+    ExplicitTop = 377
     object btnGerar: TBitBtn
       AlignWithMargins = True
       Left = 903
@@ -69419,10 +69419,31 @@ object frmPrincipal: TfrmPrincipal
       OnClick = btnGerarClick
       ExplicitLeft = 899
     end
+    object btnCancelar: TBitBtn
+      AlignWithMargins = True
+      Left = 779
+      Top = 2
+      Width = 118
+      Height = 37
+      Margins.Top = 2
+      Margins.Bottom = 2
+      Align = alRight
+      Caption = 'Cancelar'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+      Visible = False
+      OnClick = btnCancelarClick
+      ExplicitLeft = 899
+    end
   end
   object gpbxResult: TcxGroupBox
     Left = 0
-    Top = 401
+    Top = 442
     Align = alClient
     Caption = '[ Retorno ]'
     Style.LookAndFeel.NativeStyle = False
@@ -69430,6 +69451,7 @@ object frmPrincipal: TfrmPrincipal
     StyleDisabled.LookAndFeel.NativeStyle = False
     StyleDisabled.LookAndFeel.SkinName = 'SevenClassic'
     TabOrder = 3
+    ExplicitTop = 401
     ExplicitWidth = 1020
     ExplicitHeight = 325
     Height = 326
@@ -69458,6 +69480,7 @@ object frmPrincipal: TfrmPrincipal
     Properties.CustomButtons.Buttons = <>
     LookAndFeel.NativeStyle = False
     LookAndFeel.SkinName = 'DevExpressStyle'
+    OnChange = cxPageControlChange
     ExplicitWidth = 1020
     ClientRectBottom = 176
     ClientRectLeft = 2
@@ -69646,7 +69669,6 @@ object frmPrincipal: TfrmPrincipal
         Left = 640
         Top = 3
         Caption = 'IBS/CBS'
-        Style.Color = clBtnFace
         Style.LookAndFeel.NativeStyle = False
         Style.LookAndFeel.SkinName = 'SevenClassic'
         StyleDisabled.LookAndFeel.NativeStyle = False
@@ -70030,6 +70052,38 @@ object frmPrincipal: TfrmPrincipal
         NumbersOnly = True
         TabOrder = 8
         Text = '4115200'
+      end
+    end
+    object tsCancelamento: TcxTabSheet
+      Caption = '[ &4 - Cancelamento ]'
+      ImageIndex = 3
+      object edtChaveAcessoCancelamento: TLabeledEdit
+        Left = 107
+        Top = 16
+        Width = 417
+        Height = 23
+        Alignment = taCenter
+        EditLabel.Width = 95
+        EditLabel.Height = 23
+        EditLabel.Caption = 'Chave de Acesso: '
+        LabelPosition = lpLeft
+        NumbersOnly = True
+        TabOrder = 0
+        Text = ''
+      end
+      object edtMotivoCancelamento: TLabeledEdit
+        Left = 107
+        Top = 45
+        Width = 904
+        Height = 23
+        Alignment = taCenter
+        EditLabel.Width = 44
+        EditLabel.Height = 23
+        EditLabel.Caption = 'Motivo: '
+        LabelPosition = lpLeft
+        NumbersOnly = True
+        TabOrder = 1
+        Text = ''
       end
     end
   end

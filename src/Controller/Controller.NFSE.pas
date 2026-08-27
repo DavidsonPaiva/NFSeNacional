@@ -24,6 +24,7 @@ type
     function Prestador(AValue: INFSePrestador): IControllerNFSE;
     function ReformaTrib(AValue: INFSeReformaTrib): IControllerNFSE;
     function Send(APrint: Boolean = False): TModelResult;
+    function Cancel(AChaveAcesso, AMotivo: String): TModelResult;
   end;
 
   TControllerNFSE = class(TInterfacedObject, IControllerNFSE)
@@ -44,6 +45,7 @@ type
     function Prestador(AValue: INFSePrestador): IControllerNFSE;
     function ReformaTrib(AValue: INFSeReformaTrib): IControllerNFSE;
     function Send(APrint: Boolean = False): TModelResult;
+    function Cancel(AChaveAcesso, AMotivo: String): TModelResult;
   public
     constructor Create;
     destructor Destroy; override;
@@ -160,6 +162,32 @@ begin
     .Tomador(FTomador)
     .ReformaTributaria(FReformaTrib)
     .Enviar(APrint);
+end;
+
+function TControllerNFSE.Cancel(AChaveAcesso, AMotivo: String): TModelResult;
+var
+  lModel: IModelNFSE;
+begin
+  if not Assigned(FConfig) then
+    raise Exception.Create('Config não atribuída no Controller.');
+
+  FConfig.Validate;
+
+  if AChaveAcesso.Trim.IsEmpty then
+    raise Exception.Create('Chave de acesso não atribuída no Controller.');
+
+  if AMotivo.Trim.IsEmpty then
+    raise Exception.Create('Motivo do cancelamento não atribuída no Controller.');
+
+  if Length(AMotivo.Trim) < 15 then
+    raise Exception.Create('Motivo do cancelamento menor que 15 caracteres no Controller.');
+
+  lModel := ObterModelPorIBGE(FConfig.CodigoMunicipioIBGE);
+
+  Result := lModel
+    .Config(FConfig)
+    .Cancelar(AChaveAcesso, AMotivo);
+
 end;
 
 end.

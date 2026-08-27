@@ -46,6 +46,7 @@ type
     function Prestador(AValue: INFSePrestador): IModelNFSE;
     function ReformaTributaria(AValue: INFSeReformaTrib): IModelNFSE;
     function Enviar(APrint: Boolean = True): TModelResult;
+    function Cancelar(AChaveAcesso, AMotivo: String): TModelResult;
   end;
 
   TModelNFSE = class(TInterfacedObject, IModelNFSE)
@@ -62,7 +63,7 @@ type
 
     procedure loadComponent; virtual;
     procedure setData; virtual;
-    function checkResponse(AMetodo: TMetodo; ANumRPS: Integer): string; virtual;
+    function checkResponse(AMetodo: TMetodo): string; virtual;
     procedure executeIssuance; virtual;
     procedure executePrint; virtual;
 
@@ -73,6 +74,7 @@ type
     function Prestador(AValue: INFSePrestador): IModelNFSE;
     function ReformaTributaria(AValue: INFSeReformaTrib): IModelNFSE;
     function Enviar(APrint: Boolean = True): TModelResult; virtual;
+    function Cancelar(AChaveAcesso, AMotivo: String): TModelResult;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -355,7 +357,46 @@ begin
   lNota.NFSE.IBSCBS.Valores.trib.gIBSCBS.gTribRegular.cClassTribReg := '';
 end;
 
-function TModelNFSE.checkResponse(AMetodo: TMetodo; ANumRPS: Integer): string;
+function TModelNFSE.Cancelar(AChaveAcesso, AMotivo: String): TModelResult;
+var
+  lCodigo: Integer;
+  lEvento: TInfEvento;
+begin
+  FillChar(Result, SizeOf(Result), 0);
+
+  lCodigo := 1; // Código de justificativa de cancelamento:    1 - Erro na Emissão;    2 - Serviço não Prestado;    9 - Outros;
+
+  try
+    loadComponent;
+
+    lEvento := TInfEvento.Create;
+    try
+      lEvento.pedRegEvento.tpAmb         := FNFSE.Configuracoes.WebServices.AmbienteCodigo;
+      lEvento.pedRegEvento.verAplic      := 'PaivaSystem';
+      lEvento.pedRegEvento.dhEvento      := Now;
+      lEvento.pedRegEvento.chNFSe        := AChaveAcesso;
+      lEvento.pedRegEvento.nPedRegEvento := 1;
+      lEvento.pedRegEvento.tpEvento      := ACBrNFSeXConversao.teCancelamento;
+      lEvento.pedRegEvento.cMotivo       := lCodigo;
+      lEvento.pedRegEvento.xMotivo       := AMotivo;
+
+      FNFSE.EnviarEvento(lEvento);
+    finally
+      lEvento.Free;
+    end;
+
+    Result.MensagemLog := checkResponse(tmEnviarEvento);
+    Result.Sucesso     := True;
+  except
+    on E: Exception do
+    begin
+      Result.Sucesso     := False;
+      Result.MensagemLog := 'Falha no cancelamento da NFSe: ' + E.Message;
+    end;
+  end;
+end;
+
+function TModelNFSE.checkResponse(AMetodo: TMetodo): string;
 var
   lMemoLog: TMemo;
   lSucess : Boolean;
@@ -616,6 +657,11 @@ begin
               lMemoLog.Lines.Add('Sucesso  : ' + RetCancelamento.Sucesso);
               lMemoLog.Lines.Add('Link     : ' + RetCancelamento.Link);
               lMemoLog.Lines.Add('Nome Arq.: ' + PathNome);
+
+              If RetCancelamento.Sucesso = 'Sim' then
+                lSucess := True
+              else
+                lSucess := False;
             end;
 
             if FNFSE.Configuracoes.Geral.ConsultaAposCancelar and FNFSE.Provider.ConfigGeral.ConsultaNFSe then
@@ -700,7 +746,7 @@ begin
     loadComponent;
     setData;
     executeIssuance;
-    Result.MensagemLog := checkResponse(tmRecepcionar, FData.NumeroRps);
+    Result.MensagemLog := checkResponse(tmRecepcionar);
     Result.Sucesso     := True;
 
     if FNFSE.NotasFiscais.Count > 0 then

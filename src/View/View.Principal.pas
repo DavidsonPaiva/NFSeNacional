@@ -176,8 +176,14 @@ type
     edtClassTrib: TLabeledEdit;
     cbbCSTIBSCBS: TComboBox;
     Label14: TLabel;
+    tsCancelamento: TcxTabSheet;
+    btnCancelar: TBitBtn;
+    edtChaveAcessoCancelamento: TLabeledEdit;
+    edtMotivoCancelamento: TLabeledEdit;
     procedure btnGerarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure cxPageControlChange(Sender: TObject);
   private
     { Private declarations }
     procedure PopularRegimeEspecial;
@@ -205,6 +211,27 @@ uses
   Controller.NFSE,
   ACBrNFSeXConversao;
 
+procedure TfrmPrincipal.btnCancelarClick(Sender: TObject);
+begin
+  var
+  lRetorno := TControllerNFSE.New
+    .Config(GetConfig)
+    .Cancel(edtChaveAcessoCancelamento.Text, edtMotivoCancelamento.Text);
+
+  Memo.Clear;
+
+  if lRetorno.Sucesso then
+  begin
+    Memo.Lines.Add('NFSe cancelada com sucesso!' + sLineBreak +
+        'Número da Nota: ' + lRetorno.NumeroNota + sLineBreak +
+        'ChaveAcesso: ' + lRetorno.ChaveAcesso);
+  end
+  else
+  begin
+    Memo.Lines.Add('Erro ao cancelar NFSe:' + sLineBreak + lRetorno.MensagemLog);
+  end;
+end;
+
 procedure TfrmPrincipal.btnGerarClick(Sender: TObject);
 begin
   var
@@ -229,6 +256,12 @@ begin
   begin
     Memo.Lines.Add('Erro ao emitir NFSe:' + sLineBreak + lRetorno.MensagemLog);
   end;
+end;
+
+procedure TfrmPrincipal.cxPageControlChange(Sender: TObject);
+begin
+  btnCancelar.Visible := cxPageControl.ActivePage = tsCancelamento;
+  btnGerar.Visible    := not btnCancelar.Visible;
 end;
 
 procedure TfrmPrincipal.FormShow(Sender: TObject);
