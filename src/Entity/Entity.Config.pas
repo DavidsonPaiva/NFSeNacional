@@ -9,8 +9,11 @@ uses
 type
   INFSeConfig = interface
     ['{7C5427A5-0865-409C-A3AA-45C872FDDB72}']
-    function CertificadoDigital(AValue: string): INFSeConfig; overload;
-    function CertificadoDigital: string; overload;
+    function CertificadoDigital(AValue: TBytes): INFSeConfig; overload;
+    function CertificadoDigital: TBytes; overload;
+
+    function CertificadoDigitalSenha(AValue: string): INFSeConfig; overload;
+    function CertificadoDigitalSenha: string; overload;
 
     function PathResposta(AValue: string): INFSeConfig; overload;
     function PathResposta: string; overload;
@@ -39,17 +42,21 @@ type
 
   TNFSeConfig = class(TInterfacedObject, INFSeConfig)
   private
-    FCertificadoDigital : string;
-    FPathResposta       : string;
-    FPathSchemas        : string;
-    FAmbiente           : TAcbrTipoAmbiente;
-    FCaminhoLogoPref    : string;
-    FCodigoMunicipioIBGE: Integer;
-    FNomePrefeitura     : string;
-    FCaminhoLogoEmpresa : string;
+    FCertificadoDigital     : TBytes;
+    FCertificadoDigitalSenha: string;
+    FPathResposta           : string;
+    FPathSchemas            : string;
+    FAmbiente               : TAcbrTipoAmbiente;
+    FCaminhoLogoPref        : string;
+    FCodigoMunicipioIBGE    : Integer;
+    FNomePrefeitura         : string;
+    FCaminhoLogoEmpresa     : string;
   public
-    function CertificadoDigital(AValue: string): INFSeConfig; overload;
-    function CertificadoDigital: string; overload;
+    function CertificadoDigital(AValue: TBytes): INFSeConfig; overload;
+    function CertificadoDigital: TBytes; overload;
+
+    function CertificadoDigitalSenha(AValue: string): INFSeConfig; overload;
+    function CertificadoDigitalSenha: string; overload;
 
     function PathResposta(AValue: string): INFSeConfig; overload;
     function PathResposta: string; overload;
@@ -101,20 +108,26 @@ end;
 
 procedure TNFSeConfig.Clear;
 begin
-  FCertificadoDigital  := '';
+  FCertificadoDigital  := nil;
   FPathResposta        := '';
   FPathSchemas         := '';
-  FAmbiente            := TAcbrTipoAmbiente.taProducao;
+  FAmbiente            := TAcbrTipoAmbiente.taHomologacao;
   FCaminhoLogoPref     := '';
   FCaminhoLogoEmpresa  := '';
   FCodigoMunicipioIBGE := 4115200;
   FNomePrefeitura      := 'Prefeitura Municipal de Maringá';
 end;
 
-function TNFSeConfig.CertificadoDigital(AValue: string): INFSeConfig;
+function TNFSeConfig.CertificadoDigital(AValue: TBytes): INFSeConfig;
 begin
   Result              := Self;
   FCertificadoDigital := AValue;
+end;
+
+function TNFSeConfig.CertificadoDigitalSenha(AValue: string): INFSeConfig;
+begin
+  Result                   := Self;
+  FCertificadoDigitalSenha := AValue;
 end;
 
 function TNFSeConfig.PathResposta(AValue: string): INFSeConfig;
@@ -159,9 +172,14 @@ begin
   FNomePrefeitura := AValue;
 end;
 
-function TNFSeConfig.CertificadoDigital: string;
+function TNFSeConfig.CertificadoDigital: TBytes;
 begin
   Result := FCertificadoDigital;
+end;
+
+function TNFSeConfig.CertificadoDigitalSenha: string;
+begin
+  Result := FCertificadoDigitalSenha;
 end;
 
 function TNFSeConfig.PathResposta: string;
@@ -201,8 +219,11 @@ end;
 
 procedure TNFSeConfig.Validate;
 begin
-  if FCertificadoDigital.Trim.IsEmpty then
+  if FCertificadoDigital = nil then
     raise Exception.Create('Favor preencher o certificado digital.');
+
+  if FCertificadoDigitalSenha.Trim.IsEmpty then
+    raise Exception.Create('Favor preencher a senha do certificado digital.');
 
   if FPathResposta.Trim.IsEmpty then
     raise Exception.Create('Favor preencher o path das respostas.');

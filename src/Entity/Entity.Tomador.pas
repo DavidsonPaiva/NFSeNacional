@@ -30,6 +30,9 @@ type
     function CodigoMunicipioIBGE(AValue: Integer): INFSeTomador; overload;
     function CodigoMunicipioIBGE: Integer; overload;
 
+    function CodigoPais(AValue: Integer): INFSeTomador; overload;
+    function CodigoPais: Integer; overload;
+
     function Cidade(AValue: string): INFSeTomador; overload;
     function Cidade: string; overload;
 
@@ -58,6 +61,7 @@ type
     FComplemento        : string;
     FBairro             : string;
     FCodigoMunicipioIBGE: Integer;
+    FCodigoPais         : Integer;
     FCidade             : string;
     FUF                 : string;
     FCEP                : string;
@@ -84,6 +88,9 @@ type
 
     function CodigoMunicipioIBGE(AValue: Integer): INFSeTomador; overload;
     function CodigoMunicipioIBGE: Integer; overload;
+
+    function CodigoPais(AValue: Integer): INFSeTomador; overload;
+    function CodigoPais: Integer; overload;
 
     function Cidade(AValue: string): INFSeTomador; overload;
     function Cidade: string; overload;
@@ -136,6 +143,7 @@ begin
   FComplemento         := '';
   FBairro              := '';
   FCodigoMunicipioIBGE := 4115200;
+  FCodigoPais          := 1058;
   FCEP                 := '';
   FTelefone            := '';
   FEmail               := '';
@@ -182,6 +190,12 @@ function TNFSeTomador.CodigoMunicipioIBGE(AValue: Integer): INFSeTomador;
 begin
   Result               := Self;
   FCodigoMunicipioIBGE := AValue;
+end;
+
+function TNFSeTomador.CodigoPais(AValue: Integer): INFSeTomador;
+begin
+  Result      := Self;
+  FCodigoPais := AValue;
 end;
 
 function TNFSeTomador.Cidade(AValue: string): INFSeTomador;
@@ -247,6 +261,11 @@ end;
 function TNFSeTomador.CodigoMunicipioIBGE: Integer;
 begin
   Result := FCodigoMunicipioIBGE;
+end;
+
+function TNFSeTomador.CodigoPais: Integer;
+begin
+  Result := FCodigoPais;
 end;
 
 function TNFSeTomador.UF: string;

@@ -11,6 +11,8 @@ uses
   System.SysUtils,
   System.DateUtils,
   System.Generics.Collections,
+  System.NetEncoding,
+  System.IOUtils,
   Types.NFSE,
   ACBrBase,
   ACBrUtil.Base,
@@ -146,7 +148,8 @@ procedure TModelNFSE.loadComponent;
 begin
   FNFSE.NotasFiscais.Clear;
 
-  FNFSE.Configuracoes.Certificados.NumeroSerie := FConfig.CertificadoDigital;
+  FNFSE.Configuracoes.Certificados.DadosPFX := AnsiString(TNetEncoding.Base64.Decode(FConfig.CertificadoDigital));
+  FNFSE.Configuracoes.Certificados.Senha    := AnsiString(FConfig.CertificadoDigitalSenha);
 
   FNFSE.Configuracoes.Geral.SSLCryptLib   := TSSLCryptLib.cryWinCrypt;
   FNFSE.Configuracoes.Geral.SSLHttpLib    := TSSLHttpLib.httpWinHttp;
@@ -170,7 +173,8 @@ begin
   FNFSE.Configuracoes.Arquivos.Salvar           := True;
 
   FNFSE.Configuracoes.Geral.Salvar           := True;
-  FNFSE.Configuracoes.Geral.CodigoMunicipio  := 4115200; // <- Veja que isso está fixado na base, trataremos abaixo.
+  FNFSE.Configuracoes.Geral.CodigoMunicipio  := FConfig.CodigoMunicipioIBGE;
+  FNFSE.Configuracoes.Geral.Provedor         := proPadraoNacional;
   FNFSE.Configuracoes.WebServices.Ambiente   := FConfig.Ambiente;
   FNFSE.Configuracoes.WebServices.Visualizar := False;
 
@@ -324,6 +328,7 @@ begin
     lNota.NFSE.Tomador.IdentificacaoTomador.DocEstrangeiro := FTomador.CNPJ;
     lNota.NFSE.Tomador.Endereco.CodigoMunicipio            := '9999999';
     lNota.NFSE.Tomador.Endereco.xMunicipio                 := 'Exterior';
+    lNota.NFSE.Tomador.Endereco.CodigoPais                 := FTomador.CodigoPais;
   end
   else
   begin
@@ -739,6 +744,9 @@ begin
 end;
 
 function TModelNFSE.Enviar(APrint: Boolean): TModelResult;
+var
+  lCaminhoPDF: string;
+  lBytesPDF  : TBytes;
 begin
   FillChar(Result, SizeOf(Result), 0);
 
@@ -749,13 +757,36 @@ begin
     Result.MensagemLog := checkResponse(tmRecepcionar);
     Result.Sucesso     := True;
 
-    if FNFSE.NotasFiscais.Count > 0 then
+    if FNFSE.NotasFiscais.Count <= 0 then
+      exit;
+
+    Result.RPS        := FNFSE.NotasFiscais.Items[0].NFSE.IdentificacaoRps.Numero.ToInteger;
+    Result.Serie      := FNFSE.NotasFiscais.Items[0].NFSE.IdentificacaoRps.Serie.ToInteger;
+    Result.NumeroNota := FNFSE.NotasFiscais.Items[0].NFSE.Numero;
+    if FNFSE.NotasFiscais.Items[0].NFSE.ChaveAcesso <> '' then
+      Result.ChaveAcesso := FNFSE.NotasFiscais.Items[0].NFSE.ChaveAcesso
+    else
+      Result.ChaveAcesso  := FNFSE.NotasFiscais.Items[0].NFSE.CodigoVerificacao;
+    Result.Protocolo      := FNFSE.WebService.Emite.Protocolo;
+    Result.LinkNota       := FNFSE.NotasFiscais.Items[0].NFSE.Link;
+    Result.NomeArquivoXML := FNFSE.NotasFiscais.Items[0].NomeArq;
+
+    FNFSE.NotasFiscais.ImprimirPDF;
+
+    lCaminhoPDF := ChangeFileExt(FNFSE.NotasFiscais.Items[0].NomeArq, '.pdf');
+
+    if not FileExists(lCaminhoPDF) then
     begin
-      Result.NumeroNota     := FNFSE.NotasFiscais.Items[0].NFSE.Numero;
-      Result.ChaveAcesso    := FNFSE.NotasFiscais.Items[0].NFSE.CodigoVerificacao;
-      Result.Protocolo      := FNFSE.WebService.Emite.Protocolo;
-      Result.LinkNota       := FNFSE.NotasFiscais.Items[0].NFSE.Link;
-      Result.NomeArquivoXML := FNFSE.NotasFiscais.Items[0].NomeArq;
+      lCaminhoPDF := IncludeTrailingPathDelimiter(FNFSE.Configuracoes.Arquivos.PathSalvar) +
+        ExtractFileName(ChangeFileExt(FNFSE.NotasFiscais.Items[0].NomeArq, '.pdf'));
+    end;
+
+    if FileExists(lCaminhoPDF) then
+    begin
+      lBytesPDF         := TFile.ReadAllBytes(lCaminhoPDF);
+      Result.PDFBBase64 := TNetEncoding.Base64.EncodeBytesToString(lBytesPDF);
+
+      TFile.Delete(lCaminhoPDF);
     end;
 
     if APrint then
